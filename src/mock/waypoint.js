@@ -23,18 +23,20 @@ const generatePointType = () => {
 
 
 
-export const generateWayPoints = Array.from({length: COUNT_OF_EVENTS}, (_value,index) => {
-  return {
-    base_price: getRandomInteger(0, 5000),
-    date_from: null,
-    date_to: null,
-    destination: getRandomInteger(0, destinations.length-1),
-    id: index+1,
-    type: generatePointType(),
-    offers: Array.from({length: getRandomInteger(0, allOffers.length)}, (_value, index) => {
-      return {
-        id: index+1,
-      }
-    })
-  }
-})
+export const generateWayPoints = () => (
+  Array.from({length: COUNT_OF_EVENTS}, (_value,index) => {
+    return {
+      base_price: getRandomInteger(0, 5000),
+      date_from: null,
+      date_to: null,
+      destination: getRandomInteger(1, destinations.length),
+      id: index+1,
+      type: generatePointType(),
+      offers: Array.from({length: 1}, (_value, index) => {
+        return {
+          id: getRandomInteger(1, 4),
+        }
+      })
+    }
+  })
+)

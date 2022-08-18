@@ -14,7 +14,7 @@ const allOffers = Array.from({length:offerTitles.length}, (_valuee, index) =>{
 const offersByType = Array.from({length: offersTypes.length}, (_value, index) =>{
   return {
     type: offersTypes[index+1],
-    offers: Array.from({length: getRandomInteger(0, allOffers.length)}, (_value, index) => {
+    offers: Array.from({length: getRandomInteger(1, allOffers.length)}, (_value, index) => {
       return {
         id: index+1,
         title: offerTitles[index+1],
