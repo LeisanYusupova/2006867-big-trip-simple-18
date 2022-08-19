@@ -31,8 +31,8 @@ export default class EventsPresenter {
 
       console.log(selectedOffers);
 
-      this.wayPoints[i].offers = selectedOffers;
-      console.log(this.waypoints[i].selectedOffers);
+      this.wayPoints[i].selectedOffers = selectedOffers;
+      console.log(this.wayPoints[i].selectedOffers);
         render(new WayPointView(this.wayPoints[i]), this.eventsListComponent.getElement());
     }
   };

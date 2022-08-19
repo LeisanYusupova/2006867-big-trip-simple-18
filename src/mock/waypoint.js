@@ -32,7 +32,7 @@ export const generateWayPoints = () => (
       destination: getRandomInteger(1, destinations.length),
       id: index+1,
       type: generatePointType(),
-      offers: Array.from({length: 1}, (_value, index) => {
+      offers: Array.from({length: 2}, (_value, index) => {
         return {
           id: getRandomInteger(1, 4),
         }
