@@ -26,11 +26,13 @@ export default class EventsPresenter {
       this.wayPoints[i].destinationName = destinationName;
 
       const selectedOffers = this.offers.filter((item) =>
-      this.wayPoints[i].offers.some((offerId) => offerId === item.id)
+      this.wayPoints[i].offers.some((offerId) => offerId.id === item.id)
       );
 
       console.log(selectedOffers);
-      this.wayPoints[i].seletedOffers = selectedOffers;
+
+      this.wayPoints[i].offers = selectedOffers;
+      console.log(this.waypoints[i].selectedOffers);
         render(new WayPointView(this.wayPoints[i]), this.eventsListComponent.getElement());
     }
   };

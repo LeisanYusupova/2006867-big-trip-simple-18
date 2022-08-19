@@ -4,6 +4,7 @@ import { humanizeTaskDueDate } from '../util.js';
 
 const createWayPointTemplate = (wayPoint) => {
   const {base_price, type, date_from, date_to, destinationName, selectedOffers} = wayPoint;
+  const {title, price} = offer;
   const dateFrom = date_from!== null
     ? humanizeTaskDueDate(date_from)
     : '';

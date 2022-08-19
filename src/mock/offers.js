@@ -6,7 +6,7 @@ import { getRandomInteger } from '../util.js';
 const allOffers = Array.from({length:offerTitles.length}, (_valuee, index) =>{
   return {
     id: index+1,
-    title: offerTitles[index+1],
+    title: offerTitles[index],
     price: getRandomInteger(10000)
   }
 })
