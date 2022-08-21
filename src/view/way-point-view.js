@@ -4,6 +4,7 @@ import { humanizeTaskDueDate } from '../util.js';
 
 const createWayPointTemplate = (wayPoint) => {
   const {base_price, type, date_from, date_to, destinationName, selectedOffers} = wayPoint;
+  // const {title, price} = selectedOffers;
   const dateFrom = date_from!== null
     ? humanizeTaskDueDate(date_from)
     : '';
@@ -32,7 +33,7 @@ const createWayPointTemplate = (wayPoint) => {
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-18T10:30">${dateFrom}</time>
         &mdash;
-        <time class="event__end-time" datetime="2019-03-18T11:00">${dateTo}/time>
+        <time class="event__end-time" datetime="2019-03-18T11:00">${dateTo}</time>
       </p>
     </div>
     <p class="event__price">

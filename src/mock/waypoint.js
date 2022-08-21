@@ -27,8 +27,8 @@ export const generateWayPoints = () => (
   Array.from({length: COUNT_OF_EVENTS}, (_value,index) => {
     return {
       base_price: getRandomInteger(0, 5000),
-      date_from: null,
-      date_to: null,
+      date_from: "2019-07-10T22:55:56.845Z",
+      date_to: "2019-07-11T11:22:13.375Z",
       destination: getRandomInteger(1, destinations.length),
       id: index+1,
       type: generatePointType(),

@@ -1,9 +1,9 @@
 const photos = [
-  'img/photos/1.png',
-  'img/photos/2.png',
-  'img/photos/3.png',
-  'img/photos/4.png',
-  'img/photos/5.png',
+  'img/photos/1.jpg',
+  'img/photos/2.jpg',
+  'img/photos/3.jpg',
+  'img/photos/4.jpg',
+  'img/photos/5.jpg',
 ]
 
 const offersTypes = [
