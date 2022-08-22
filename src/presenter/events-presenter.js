@@ -7,43 +7,48 @@ import { render } from '../render.js';
 
 
 export default class EventsPresenter {
-  eventsListComponent = new EventsListView();
-  editEventFormComponent = new EditEventFormView();
+  #eventsContainer = null;
+  #wayPointsModel = null;
+  #eventsListComponent = new EventsListView();
+  #editEventFormComponent = new EditEventFormView();
+  #wayPoints = [];
+  #offers = [];
 
   init = (eventsContainer, wayPointsModel) => {
-    this.eventsContainer = eventsContainer;
-    this.wayPointsModel = wayPointsModel;
-    this.wayPoints = [...this.wayPointsModel.getWayPoints()];
-    this.offers = [...this.wayPointsModel.getOffers()];
-    console.log(this.wayPoints);
-    console.log(this.offers);
-    render(this.eventsListComponent, this.eventsContainer);
+    this.#eventsContainer = eventsContainer;
+    this.#wayPointsModel = wayPointsModel;
+    this.#wayPoints = [...this.#wayPointsModel.wayPoints];
+    this.#offers = [...this.#wayPointsModel.offers];
+
+    render(this.#eventsListComponent, this.#eventsContainer.element);
+
+
     const destinationEditForm = destinations.find(
-      (item) => item.id === this.wayPoints[0].destination
+      (item) => item.id === this.#wayPoints[0].destination
     );
-    this.wayPoints[0].destinations = destinationEditForm;
+    this.#wayPoints[0].destinations = destinationEditForm;
     const allOffersForType = offersByType.find((item) => item.type === this.wayPoints[0].type);
-    this.wayPoints[0].allOffers = allOffersForType;
+    this.#wayPoints[0].allOffers = allOffersForType;
     console.log(this.wayPoints[0].allOffers);
-    const checkedOffers = this.offers.filter((item) =>
+    const checkedOffers = this.#offers.filter((item) =>
       this.wayPoints[0].offers.some((offerId) => offerId.id === item.id));
     console.log(checkedOffers);
-    this.wayPoints[0].checkedOffers = checkedOffers;
-    render(new EditEventFormView(this.wayPoints[0]), this.eventsListComponent.getElement());
+    this.#wayPoints[0].checkedOffers = checkedOffers;
+    render(new EditEventFormView(this.#wayPoints[0]), this.#eventsListComponent.element);
 
-    for (let i = 1; i < this.wayPoints.length; i++) {
+    for (let i = 1; i < this.#wayPoints.length; i++) {
       const destinationName = destinations.find(
-        (item) => item.id === this.wayPoints[i].destination
+        (item) => item.id === this.#wayPoints[i].destination
       ).name;
 
-      this.wayPoints[i].destinationName = destinationName;
+      this.#wayPoints[i].destinationName = destinationName;
 
-      const selectedOffers = this.offers.filter((item) =>
-        this.wayPoints[i].offers.some((offerId) => offerId.id === item.id)
+      const selectedOffers = this.#offers.filter((item) =>
+        this.#wayPoints[i].offers.some((offerId) => offerId.id === item.id)
       );
 
-      this.wayPoints[i].selectedOffers = selectedOffers;
-      render(new WayPointView(this.wayPoints[i]), this.eventsListComponent.getElement());
+      this.#wayPoints[i].selectedOffers = selectedOffers;
+      render(new WayPointView(this.#wayPoints[i]), this.#eventsListComponent.element);
     }
   };
 }

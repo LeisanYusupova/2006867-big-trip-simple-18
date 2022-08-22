@@ -149,23 +149,26 @@ const editEventViewTemplate = (wayPoint) => {
 };
 
 export default class EditEventFormView{
+  #element = null;
+  #wayPoint = null;
+
   constructor(wayPoint) {
-    this.wayPoint = wayPoint;
+    this.#wayPoint = wayPoint;
   }
 
-  getTemplate() {
-    return editEventViewTemplate(this.wayPoint);
+  get template() {
+    return editEventViewTemplate(this.#wayPoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
