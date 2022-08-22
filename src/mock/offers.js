@@ -1,28 +1,26 @@
-import { offersTypes, offerTitles  } from './const.js';
+import { offersTypes, offerTitles } from './const.js';
 import { getRandomInteger } from '../util.js';
-
-
 
 const allOffers = Array.from({length:offerTitles.length}, (_valuee, index) =>{
   return {
-    id: index+1,
+    id: index + 1,
     title: offerTitles[index],
     price: getRandomInteger(10000)
-  }
-})
+  };
+});
 
 const offersByType = Array.from({length: offersTypes.length}, (_value, index) =>{
   return {
-    type: offersTypes[index+1],
+    type: offersTypes[index + 1],
     offers: Array.from({length: getRandomInteger(1, allOffers.length)}, (_value, index) => {
       return {
-        id: index+1,
+        id: index + 1,
         title: offerTitles[index],
         price: getRandomInteger(10000)
-      }
+      };
     })
-  }
-})
+  };
+});
 
 
-export {offersByType, allOffers}
+export {offersByType, allOffers};

@@ -1,29 +1,31 @@
 import { createElement } from '../render.js';
 
-
-
 const editEventViewTemplate = (wayPoint) => {
-  const {base_price, type, date_from, date_to, destinations, allOffers, checkedOffers } = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, checkedOffers } = wayPoint;
   const destinationPictures = destinations.pictures;
 
   const destinationPhotosTemplate = destinationPictures.map((item) =>
     `<img class="event__photo" src=${item.src} alt="Event photo">`
-    ).join('');
-  const availableOffers = allOffers.offers;
-  const offerTemplate = availableOffers.map((item) =>
-  ` <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-      <label class="event__offer-label" for="event-offer-luggage-1">
-      <span class="event__offer-title">${item.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${item.price}</span>
-      </label>
-    </div>`
   ).join('');
+  const availableOffers = allOffers.offers;
+
+  const offerTemplate = availableOffers.map((item) => {
+    const checked = checkedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
+    return (`<div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}/>
+            <label class="event__offer-label" for="event-offer-luggage-1">
+            <span class="event__offer-title">${item.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${item.price}</span>
+            </label>
+          </div>`
+    );
+  }).join('');
+
 
   return (
 
-  `
+    `
         <form class="event event--edit" action="#" method="post">
           <header class="event__header">
             <div class="event__type-wrapper">
@@ -109,7 +111,7 @@ const editEventViewTemplate = (wayPoint) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${base_price}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -139,13 +141,14 @@ const editEventViewTemplate = (wayPoint) => {
                   </section>
                 </section>
       </form>`
-    );
-  }
+  );
+};
 
 export default class EditEventFormView{
   constructor(wayPoint) {
     this.wayPoint = wayPoint;
   }
+
   getTemplate() {
     return editEventViewTemplate(this.wayPoint);
   }
