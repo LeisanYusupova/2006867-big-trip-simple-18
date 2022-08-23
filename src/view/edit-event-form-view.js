@@ -2,7 +2,7 @@ import { createElement } from '../render.js';
 import { humanizeFullDate } from '../util.js';
 
 const editEventViewTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, checkedOffers } = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, selectedOffers} = wayPoint;
   const destinationPictures = destinations.pictures;
 
   const fullDateFrom = humanizeFullDate(dateFrom);
@@ -14,7 +14,7 @@ const editEventViewTemplate = (wayPoint) => {
   const availableOffers = allOffers.offers;
 
   const offerTemplate = availableOffers.map((item) => {
-    const checked = checkedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
+    const checked = selectedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
     return (`<div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}/>
             <label class="event__offer-label" for="event-offer-luggage-1">
