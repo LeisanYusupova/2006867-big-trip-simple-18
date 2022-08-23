@@ -3,7 +3,9 @@ import { humanizeTaskDueDate, humanizePointTime} from '../util.js';
 
 
 const createWayPointTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinationName, selectedOffers} = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinations, selectedOffers} = wayPoint;
+
+  const pointDestinations = wayPoint.destinations;
 
   const timeFrom = dateFrom !== null
     ? humanizePointTime(dateFrom)
@@ -11,7 +13,6 @@ const createWayPointTemplate = (wayPoint) => {
   const timeTo = dateTo !== null
     ? humanizePointTime(dateTo)
     : '';
-
   const dayFrom = humanizeTaskDueDate(dateFrom);
 
   const offersTemplate = selectedOffers.map((offer) =>
@@ -30,7 +31,7 @@ const createWayPointTemplate = (wayPoint) => {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${destinationName}</h3>
+    <h3 class="event__title">${type} ${pointDestinations.name}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
@@ -54,24 +55,28 @@ const createWayPointTemplate = (wayPoint) => {
 };
 
 export default class WayPointView{
+  #element = null;
+  #wayPoint = null;
+  #offer = null;
+
   constructor(wayPoint, offer) {
-    this.wayPoint = wayPoint;
-    this.offer = offer;
+    this.#wayPoint = wayPoint;
+    this.#offer = offer;
   }
 
-  getTemplate() {
-    return createWayPointTemplate(this.wayPoint, this.offer);
+  get template() {
+    return createWayPointTemplate(this.#wayPoint, this.#offer);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

@@ -2,7 +2,7 @@ import { createElement } from '../render.js';
 import { humanizeFullDate } from '../util.js';
 
 const editEventViewTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, checkedOffers } = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, selectedOffers} = wayPoint;
   const destinationPictures = destinations.pictures;
 
   const fullDateFrom = humanizeFullDate(dateFrom);
@@ -14,7 +14,7 @@ const editEventViewTemplate = (wayPoint) => {
   const availableOffers = allOffers.offers;
 
   const offerTemplate = availableOffers.map((item) => {
-    const checked = checkedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
+    const checked = selectedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
     return (`<div class="event__offer-selector">
             <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}/>
             <label class="event__offer-label" for="event-offer-luggage-1">
@@ -149,23 +149,26 @@ const editEventViewTemplate = (wayPoint) => {
 };
 
 export default class EditEventFormView{
+  #element = null;
+  #wayPoint = null;
+
   constructor(wayPoint) {
-    this.wayPoint = wayPoint;
+    this.#wayPoint = wayPoint;
   }
 
-  getTemplate() {
-    return editEventViewTemplate(this.wayPoint);
+  get template() {
+    return editEventViewTemplate(this.#wayPoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

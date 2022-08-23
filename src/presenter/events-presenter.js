@@ -7,43 +7,80 @@ import { render } from '../render.js';
 
 
 export default class EventsPresenter {
-  eventsListComponent = new EventsListView();
-  editEventFormComponent = new EditEventFormView();
+  #eventsContainer = null;
+  #wayPointsModel = null;
+  #eventsListComponent = new EventsListView();
+  #wayPoints = [];
+  #offers = [];
 
   init = (eventsContainer, wayPointsModel) => {
-    this.eventsContainer = eventsContainer;
-    this.wayPointsModel = wayPointsModel;
-    this.wayPoints = [...this.wayPointsModel.getWayPoints()];
-    this.offers = [...this.wayPointsModel.getOffers()];
-    console.log(this.wayPoints);
-    console.log(this.offers);
-    render(this.eventsListComponent, this.eventsContainer);
-    const destinationEditForm = destinations.find(
-      (item) => item.id === this.wayPoints[0].destination
-    );
-    this.wayPoints[0].destinations = destinationEditForm;
-    const allOffersForType = offersByType.find((item) => item.type === this.wayPoints[0].type);
-    this.wayPoints[0].allOffers = allOffersForType;
-    console.log(this.wayPoints[0].allOffers);
-    const checkedOffers = this.offers.filter((item) =>
-      this.wayPoints[0].offers.some((offerId) => offerId.id === item.id));
-    console.log(checkedOffers);
-    this.wayPoints[0].checkedOffers = checkedOffers;
-    render(new EditEventFormView(this.wayPoints[0]), this.eventsListComponent.getElement());
+    this.#eventsContainer = eventsContainer;
+    this.#wayPointsModel = wayPointsModel;
+    this.#wayPoints = [...this.#wayPointsModel.wayPoints];
+    this.#offers = [...this.#wayPointsModel.offers];
 
-    for (let i = 1; i < this.wayPoints.length; i++) {
-      const destinationName = destinations.find(
-        (item) => item.id === this.wayPoints[i].destination
-      ).name;
+    render(this.#eventsListComponent, this.#eventsContainer);
 
-      this.wayPoints[i].destinationName = destinationName;
 
-      const selectedOffers = this.offers.filter((item) =>
-        this.wayPoints[i].offers.some((offerId) => offerId.id === item.id)
+    for (let i = 0; i < this.#wayPoints.length; i++) {
+
+      const pointDestinations = destinations.find(
+        (item) => item.id === this.#wayPoints[i].destination
       );
+      this.#wayPoints[i].destinations = pointDestinations;
 
-      this.wayPoints[i].selectedOffers = selectedOffers;
-      render(new WayPointView(this.wayPoints[i]), this.eventsListComponent.getElement());
+
+      const selectedOffers = this.#offers.filter((item) =>
+        this.#wayPoints[i].offers.some((offerId) => offerId.id === item.id)
+      );
+      this.#wayPoints[i].selectedOffers = selectedOffers;
+
+
+      const allOffersForType = offersByType.find(
+        (item) => item.type === this.#wayPoints[i].type);
+      this.#wayPoints[i].allOffers = allOffersForType;
+
+
+      this.#renderPoint(this.#wayPoints[i]);
     }
   };
+
+
+  #renderPoint = (wayPoint) => {
+    const pointComponent = new WayPointView(wayPoint);
+    const pointEditComponent = new EditEventFormView(wayPoint);
+
+    const replacePointToForm = () => {
+      this.#eventsListComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
+    }
+
+    const replaceFormToPoint = () => {
+      this.#eventsListComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
+    }
+
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+    })
+
+
+    pointEditComponent.element.addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    })
+
+    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', replaceFormToPoint);
+
+
+    render(pointComponent, this.#eventsListComponent.element);
+  }
 }
