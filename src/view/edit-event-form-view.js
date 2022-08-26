@@ -1,5 +1,6 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeFullDate } from '../util.js';
+
 
 const editEventViewTemplate = (wayPoint) => {
   const {basePrice, type, dateFrom, dateTo, destinations, allOffers, selectedOffers} = wayPoint;
@@ -148,27 +149,16 @@ const editEventViewTemplate = (wayPoint) => {
   );
 };
 
-export default class EditEventFormView{
-  #element = null;
+export default class EditEventFormView extends AbstractView{
+
   #wayPoint = null;
 
   constructor(wayPoint) {
+    super();
     this.#wayPoint = wayPoint;
   }
 
   get template() {
     return editEventViewTemplate(this.#wayPoint);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -4,7 +4,7 @@ import WayPointView from '../view/way-point-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { destinations } from '../mock/destinations.js';
 import { offersByType } from '../mock/offers.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 
 export default class EventsPresenter {
