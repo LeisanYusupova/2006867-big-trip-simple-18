@@ -9,4 +9,14 @@ export default class NoPointView extends AbstractView {
   get template() {
     return createNoPointTemplate();
   }
+
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }
