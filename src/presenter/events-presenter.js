@@ -4,7 +4,7 @@ import WayPointView from '../view/way-point-view.js';
 import NoPointView from '../view/no-point-view.js';
 import { destinations } from '../mock/destinations.js';
 import { offersByType } from '../mock/offers.js';
-import { render } from '../render.js';
+import { render } from '../framework/render.js';
 
 
 export default class EventsPresenter {
@@ -35,19 +35,16 @@ export default class EventsPresenter {
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setEditClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     })
 
 
-    pointEditComponent.element.addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    pointEditComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     })
-
-    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', replaceFormToPoint);
 
 
     render(pointComponent, this.#eventsListComponent.element);
@@ -60,7 +57,6 @@ export default class EventsPresenter {
     this.#offers = [...this.#wayPointsModel.offers];
 
     render(this.#eventsListComponent, this.#eventsContainer);
-
 
 
     if (this.#wayPoints.length === 0) {

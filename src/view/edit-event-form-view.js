@@ -1,5 +1,6 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeFullDate } from '../util.js';
+
 
 const editEventViewTemplate = (wayPoint) => {
   const {basePrice, type, dateFrom, dateTo, destinations, allOffers, selectedOffers} = wayPoint;
@@ -148,11 +149,12 @@ const editEventViewTemplate = (wayPoint) => {
   );
 };
 
-export default class EditEventFormView{
-  #element = null;
+export default class EditEventFormView extends AbstractView{
+
   #wayPoint = null;
 
   constructor(wayPoint) {
+    super();
     this.#wayPoint = wayPoint;
   }
 
@@ -160,15 +162,15 @@ export default class EditEventFormView{
     return editEventViewTemplate(this.#wayPoint);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.addEventListener('submit', this.#formSubmitHandler);
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
+  };
 
-    return this.#element;
-  }
 
-  removeElement() {
-    this.#element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }

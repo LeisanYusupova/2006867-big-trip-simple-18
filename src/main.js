@@ -1,7 +1,7 @@
 import NewEventButtonView from './view/new-event-button-view.js';
 import FilterView from './view/filter-view.js';
 import SortingView from './view/sorting-view.js';
-import {render} from './render.js';
+import { render } from './framework/render.js';
 import EventsPresenter from './presenter/events-presenter.js';
 import WayPointsModel from './model/events-model.js';
 
