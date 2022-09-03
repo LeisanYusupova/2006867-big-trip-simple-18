@@ -14,5 +14,20 @@ const humanizePointTime = (date) => dayjs(date).format('HH:mm');
 
 const humanizeFullDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
+const updateItem = (items, update) => {
+  const index = items.findIndex((item) => item.id === update.id);
 
-export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate};
+  if (index === -1) {
+    return items;
+  }
+
+  return [
+    ...items.slice(0, index),
+    update,
+    ...items.slice(index + 1),
+  ];
+};
+
+
+
+export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, updateItem};
