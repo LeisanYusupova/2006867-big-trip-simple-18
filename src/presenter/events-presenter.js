@@ -5,6 +5,9 @@ import SortingView from '../view/sorting-view.js';
 import { updateItem } from '../util.js';
 import { destinations } from '../mock/destinations.js';
 import { offersByType } from '../mock/offers.js';
+import { sortByDate } from '../util.js';
+import { sortByPrice } from '../util.js';
+import { SortType } from '../const.js';
 import {render, RenderPosition} from '../framework/render.js';
 
 
@@ -17,6 +20,8 @@ export default class EventsPresenter {
   #wayPoints = [];
   #offers = [];
   #pointPresenter = new Map();
+  #currentSortType = SortType.DAY;
+  #sourcedWayPoints = [];
 
   constructor(eventsContainer, wayPointsModel) {
     this.#eventsContainer = eventsContainer;
@@ -26,23 +31,52 @@ export default class EventsPresenter {
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
     this.#offers = [...this.#wayPointsModel.offers];
+    this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
 
     this.#renderBoard();
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#wayPoints = updateItem(this.#wayPoints, updatedPoint);
+    this.#sourcedWayPoints = updateItem(this.#sourcedWayPoints, updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  };
+
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#wayPoints.sort(sortByDate);
+        break;
+      case SortType.PRICE:
+        this.#wayPoints.sort(sortByPrice);
+        break;
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType);
+    this.#clearPointList();
+    this.#renderPointsList;
+    // - Сортируем задачи
+    // - Очищаем список
+    // - Рендерим список заново
   };
 
 
   #renderSort = () => {
     render(this.#sortComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #handleModeChange = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
-
-  // #handlePointChange = (updatedPoint) => {
-  //   this.#wayPoints = updateItem(this.#wayPoints, updatedPoint);
-  //   this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
-  // };
 
 
   #renderPoint = (wayPoint) => {
@@ -88,12 +122,14 @@ export default class EventsPresenter {
   #renderBoard = () => {
     render(this.#eventsListComponent, this.#eventsContainer);
 
+    this.#renderSort();
+
     if (this.#wayPoints.length === 0) {
       this.#renderNoPoints;
       return
     }
 
     this.#renderPointsList();
-    this.#renderSort();
+
   }
 }

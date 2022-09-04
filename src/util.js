@@ -28,6 +28,36 @@ const updateItem = (items, update) => {
   ];
 };
 
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
 
 
-export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, updateItem};
+
+const sortByDate = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dueDate, pointB.dueDate);
+
+  return weight ?? dayjs(pointB.dueDate).diff(dayjs(pointA.dueDate));
+};
+
+const sortByPrice = (pointA, pointB) => {
+  const weight = getWeightForNull(pointA.basePrice, pointB.basePrice);
+
+  return weight ?? pointB.basePrice - pointA.basePrice;
+};
+
+
+
+export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, updateItem, sortByDate, sortByPrice};
