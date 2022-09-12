@@ -20,7 +20,7 @@ export default class EventsPresenter {
   #wayPoints = [];
   #offers = [];
   #pointPresenter = new Map();
-  #currentSortType = SortType.DAY;
+  #currentSortType = SortType.PRICE;
   #sourcedWayPoints = [];
 
   constructor(eventsContainer, wayPointsModel) {
@@ -45,13 +45,18 @@ export default class EventsPresenter {
   #sortPoints = (sortType) => {
     switch (sortType) {
       case SortType.DAY:
+        console.log('date');
         this.#wayPoints.sort(sortByDate);
         break;
       case SortType.PRICE:
+        console.log('price');
         this.#wayPoints.sort(sortByPrice);
         break;
+      default:
+        // 3. А когда пользователь захочет "вернуть всё, как было",
+        // мы просто запишем в _boardTasks исходный массив
+        this.#wayPoints = [...this.#sourcedWayPoints];
     }
-
     this.#currentSortType = sortType;
   };
 
@@ -62,7 +67,7 @@ export default class EventsPresenter {
 
     this.#sortPoints(sortType);
     this.#clearPointList();
-    this.#renderPointsList;
+    this.#renderPointsList();
     // - Сортируем задачи
     // - Очищаем список
     // - Рендерим список заново
@@ -80,7 +85,7 @@ export default class EventsPresenter {
 
 
   #renderPoint = (wayPoint) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handlePointChange, this.#handleModeChange);
 
     pointPresenter.init(wayPoint);
 
@@ -122,7 +127,7 @@ export default class EventsPresenter {
   #renderBoard = () => {
     render(this.#eventsListComponent, this.#eventsContainer);
 
-    this.#renderSort();
+
 
     if (this.#wayPoints.length === 0) {
       this.#renderNoPoints;
@@ -130,6 +135,7 @@ export default class EventsPresenter {
     }
 
     this.#renderPointsList();
+    this.#renderSort();
 
   }
 }

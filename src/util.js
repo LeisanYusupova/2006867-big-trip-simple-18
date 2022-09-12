@@ -53,9 +53,7 @@ const sortByDate = (pointA, pointB) => {
 };
 
 const sortByPrice = (pointA, pointB) => {
-  const weight = getWeightForNull(pointA.basePrice, pointB.basePrice);
-
-  return weight ?? pointB.basePrice - pointA.basePrice;
+  pointB.basePrice - pointA.basePrice;
 };
 
 
