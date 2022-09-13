@@ -53,7 +53,7 @@ const sortByDate = (pointA, pointB) => {
 };
 
 const sortByPrice = (pointA, pointB) => {
-  pointB.basePrice - pointA.basePrice;
+  return pointB.basePrice - pointA.basePrice;
 };
 
 

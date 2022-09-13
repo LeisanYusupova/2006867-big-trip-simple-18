@@ -51,6 +51,7 @@ export default class EventsPresenter {
       case SortType.PRICE:
         console.log('price');
         this.#wayPoints.sort(sortByPrice);
+        console.log(this.#wayPoints);
         break;
       default:
         // 3. А когда пользователь захочет "вернуть всё, как было",
