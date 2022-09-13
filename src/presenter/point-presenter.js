@@ -11,14 +11,17 @@ const Mode = {
 export default class PointPresenter {
 
   #pointListContainer = null;
+  #changeData = null;
   #changeMode = null;
   #pointComponent = null;
   #pointEditComponent = null;
   #wayPoint = null;
   #mode = Mode.DEFAULT;
+  
 
-  constructor(pointListContainer, changeMode) {
+  constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
+    this.#changeData = changeData;
     this.#changeMode = changeMode;
   }
 
