@@ -13,8 +13,10 @@ export default class PointPresenter {
   #pointListContainer = null;
   #changeData = null;
   #changeMode = null;
+
   #pointComponent = null;
   #pointEditComponent = null;
+
   #wayPoint = null;
   #mode = Mode.DEFAULT;
 
@@ -37,6 +39,7 @@ export default class PointPresenter {
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#pointListContainer);
@@ -66,6 +69,10 @@ export default class PointPresenter {
     }
   };
 
+  #handleUpdatePoint= (newData) => {
+    this.#changeData({...this.#wayPoint, ...newData});
+  }
+
 
   #replacePointToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
@@ -91,8 +98,8 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handleFormSubmit = () => {
-    this.#changeData();
+  #handleFormSubmit = (wayPoint) => {
+    this.#changeData(wayPoint);
     this.#replaceFormToPoint();
   };
 

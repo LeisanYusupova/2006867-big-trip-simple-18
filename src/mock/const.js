@@ -7,6 +7,7 @@ const photos = [
 ];
 
 const offersTypes = [
+  '',
   'taxi',
   'bus',
   'train',

@@ -171,6 +171,11 @@ export default class EditEventFormView extends AbstractStatefulView{
     );
   };
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  };
+
   #eventTypeToggleHandler = (evt) => {
     evt.preventDefault();
     this.updateElement({
@@ -188,8 +193,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   };
 
   #priceToggleHandler = (evt) => {
-    evt.preventDefault();
-    this.updateElement({
+    this._setState({
       basePrice: evt.target.value,
     });
   };

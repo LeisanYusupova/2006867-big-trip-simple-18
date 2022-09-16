@@ -30,6 +30,7 @@ export default class EventsPresenter {
 
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
+    console.log(this.#wayPoints);
     this.#allOffers = [...this.#wayPointsModel.allOffers];
     this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
     this.#destinations = [...this.#wayPointsModel.destinations];
@@ -41,7 +42,7 @@ export default class EventsPresenter {
   #handlePointChange = (updatedPoint) => {
     this.#wayPoints = updateItem(this.#wayPoints, updatedPoint);
     this.#sourcedWayPoints = updateItem(this.#sourcedWayPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#wayPointsModel);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   };
 
   #sortPoints = (sortType) => {
