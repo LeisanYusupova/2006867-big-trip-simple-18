@@ -3,8 +3,6 @@ import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
 import { updateItem } from '../util.js';
-import { destinations } from '../mock/destinations.js';
-import { offersByType } from '../mock/offers.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
 import { SortType } from '../const.js';
@@ -18,7 +16,9 @@ export default class EventsPresenter {
   #sortComponent = new SortingView();
   #noPointsComponent = new NoPointView();
   #wayPoints = [];
-  #offers = [];
+  #allOffers = [];
+  #destinations = [];
+  #offersByType = [];
   #pointPresenter = new Map();
   #currentSortType = SortType.PRICE;
   #sourcedWayPoints = [];
@@ -30,8 +30,10 @@ export default class EventsPresenter {
 
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
-    this.#offers = [...this.#wayPointsModel.offers];
+    this.#allOffers = [...this.#wayPointsModel.allOffers];
     this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
+    this.#destinations = [...this.#wayPointsModel.destinations];
+    this.#offersByType = [...this.#wayPointsModel.offersByType];
 
     this.#renderBoard();
   };
@@ -39,7 +41,7 @@ export default class EventsPresenter {
   #handlePointChange = (updatedPoint) => {
     this.#wayPoints = updateItem(this.#wayPoints, updatedPoint);
     this.#sourcedWayPoints = updateItem(this.#sourcedWayPoints, updatedPoint);
-    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint, this.#wayPointsModel);
   };
 
   #sortPoints = (sortType) => {
@@ -54,8 +56,6 @@ export default class EventsPresenter {
         console.log(this.#wayPoints);
         break;
       default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
         this.#wayPoints = [...this.#sourcedWayPoints];
     }
     this.#currentSortType = sortType;
@@ -105,21 +105,25 @@ export default class EventsPresenter {
   #renderPointsList = () => {
       for (let i = 0; i < this.#wayPoints.length; i++) {
 
-        const pointDestinations = destinations.find(
+        const pointDestinations = this.#destinations.find(
           (item) => item.id === this.#wayPoints[i].destination
         );
-        this.#wayPoints[i].destinations = pointDestinations;
+        this.#wayPoints[i].destinationInfo = pointDestinations;
+        console.log(this.#wayPoints[i].destinationInfo);
 
 
-        const selectedOffers = this.#offers.filter((item) =>
+
+        const selectedOffers = this.#allOffers.filter((item) =>
           this.#wayPoints[i].offers.some((offerId) => offerId.id === item.id)
         );
         this.#wayPoints[i].selectedOffers = selectedOffers;
 
 
-        const allOffersForType = offersByType.find(
+        const allOffersForType = this.#offersByType.find(
           (item) => item.type === this.#wayPoints[i].type);
-        this.#wayPoints[i].allOffers = allOffersForType;
+        this.#wayPoints[i].availableOffers = allOffersForType;
+
+
 
         this.#renderPoint(this.#wayPoints[i]);
       }

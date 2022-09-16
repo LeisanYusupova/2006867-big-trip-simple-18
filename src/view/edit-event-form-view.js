@@ -1,24 +1,27 @@
-import AbstractView from '../framework/view/abstract-view.js';
+
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeFullDate } from '../util.js';
 
 
 const editEventViewTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinations, allOffers, selectedOffers} = wayPoint;
-  const destinationPictures = destinations.pictures;
-
+  const {basePrice, type, dateFrom, dateTo, destinationInfo, destination, availableOffers, selectedOffers} = wayPoint;
+  const destinationPictures = destinationInfo.pictures;
+  const destinationName = destinationInfo.name;
   const fullDateFrom = humanizeFullDate(dateFrom);
   const fullDateTo = humanizeFullDate(dateTo);
+
+
 
   const destinationPhotosTemplate = destinationPictures.map((item) =>
     `<img class="event__photo" src=${item.src} alt="Event photo">`
   ).join('');
-  const availableOffers = allOffers.offers;
 
-  const offerTemplate = availableOffers.map((item) => {
+
+  const offerTemplate = availableOffers.offers.map((item) => {
     const checked = selectedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
     return (`<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${checked}/>
-            <label class="event__offer-label" for="event-offer-luggage-1">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.id}" type="checkbox" name="event-offer-${item.id}" ${checked}/>
+            <label class="event__offer-label" for="event-offer-${item.id}">
             <span class="event__offer-title">${item.title}</span>
             &plus;&euro;&nbsp;
             <span class="event__offer-price">${item.price}</span>
@@ -95,7 +98,7 @@ const editEventViewTemplate = (wayPoint) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -136,7 +139,7 @@ const editEventViewTemplate = (wayPoint) => {
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destinations.description}</p>
+                    <p class="event__destination-description">${destinationInfo.description}</p>
 
                     <div class="event__photos-container">
                       <div class="event__photos-tape">
@@ -149,18 +152,71 @@ const editEventViewTemplate = (wayPoint) => {
   );
 };
 
-export default class EditEventFormView extends AbstractView{
+export default class EditEventFormView extends AbstractStatefulView{
 
-  #wayPoint = null;
 
-  constructor(wayPoint) {
+  constructor(wayPoint, destinations, allOffers, offersByType) {
     super();
-    this.#wayPoint = wayPoint;
+    this._state = EditEventFormView.parsePointToState(wayPoint, destinations, allOffers, offersByType);
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return editEventViewTemplate(this.#wayPoint);
+    return editEventViewTemplate(this._state);
   }
+
+  reset = (waypoint) => {
+    this.updateElement(
+      EditEventFormView.parseStateToPoint(waypoint)
+    );
+  };
+
+  #eventTypeToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+      offers: [],
+      offersByType: this._state.allOffers.find((offers) => offers.type === evt.target.value)
+    });
+  };
+
+  #destinationToggleHandler = (evt) => {
+    const currentDestination = this._state.destinations.find((destination) => destination.name === evt.target.value);
+    this.updateElement({
+      destination: currentDestination.id
+    });
+  };
+
+  #priceToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: [userDate],
+    });
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: [userDate],
+    });
+  };
+
+  #offersToggleHandler = () => {
+    const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
+    const selectedOfferIds = [];
+    selectedOffers.forEach((selectedOffer) => selectedOfferIds.push(Number(selectedOffer.dataset.offerId)));
+    this._setState({
+      offers: selectedOfferIds
+    });
+  };
+
+
+
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
@@ -171,6 +227,31 @@ export default class EditEventFormView extends AbstractView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(EditEventFormView.parseStateToPoint(this._state));
   };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#priceToggleHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationToggleHandler);
+  }
+
+  static parsePointToState = (wayPoint, destinations, allOffers, offersByType) => ({...wayPoint,
+    destinations: destinations,
+    allOffers: allOffers,
+    offersByType: offersByType
+  });
+
+  static parseStateToPoint = (state) => {
+
+    const wayPoint = {...state};
+
+    delete wayPoint.destinations;
+    delete wayPoint.offersByType;
+    delete wayPoint.allOffers;
+    return wayPoint;
+
+  }
+
 }

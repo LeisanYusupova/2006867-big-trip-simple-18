@@ -17,7 +17,7 @@ export default class PointPresenter {
   #pointEditComponent = null;
   #wayPoint = null;
   #mode = Mode.DEFAULT;
-  
+
 
   constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
@@ -92,6 +92,7 @@ export default class PointPresenter {
   };
 
   #handleFormSubmit = () => {
+    this.#changeData();
     this.#replaceFormToPoint();
   };
 
