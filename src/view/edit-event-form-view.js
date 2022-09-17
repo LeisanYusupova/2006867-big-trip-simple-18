@@ -1,5 +1,6 @@
 
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import { destinations } from '../mock/destinations.js';
 import { humanizeFullDate } from '../util.js';
 
 
@@ -186,8 +187,11 @@ export default class EditEventFormView extends AbstractStatefulView{
     });
   };
 
+
+
   #destinationToggleHandler = (evt) => {
-    const currentDestination = this._state.destinations.find((destination) => destination.name === evt.target.value);
+    console.log(destinations);
+    const currentDestination = destinations.find((destination) => destination.name === evt.target.value);
     this.updateElement({
       destination: currentDestination.id
     });
@@ -220,6 +224,17 @@ export default class EditEventFormView extends AbstractStatefulView{
       offers: selectedOfferIds,
     });
   };
+
+  setTypeChangeHandler = (callback) => {
+    this._callback.typeChange = callback;
+    this.element.querySelectorAll('.event__type-input').forEach((item) => {
+      item.addEventListener('input', this.#typeChangeHandler)
+    })
+  }
+
+  #typeChangeHandler = (evt) => {
+    this._callback.typeChange(evt.currentTarget.value);
+  }
 
 
 

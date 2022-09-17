@@ -47,6 +47,7 @@ export default class PointPresenter {
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    // this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
 
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -77,10 +78,6 @@ export default class PointPresenter {
     }
   };
 
-  #handleUpdatePoint= (newData) => {
-    this.#changeData({...this.#wayPoint, ...newData});
-  }
-
 
   #replacePointToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
@@ -105,6 +102,11 @@ export default class PointPresenter {
   #handleEditClick = () => {
     this.#replacePointToForm();
   };
+
+  #handleTypeChange = (newType) => {
+    this.#wayPoint = {...this.#wayPoint, type: newType};
+    this.init(this.#wayPoint);
+  }
 
   #handleFormSubmit = (wayPoint) => {
     this.#changeData(wayPoint);
