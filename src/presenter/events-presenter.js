@@ -17,9 +17,6 @@ export default class EventsPresenter {
   #sortComponent = new SortingView();
   #noPointsComponent = new NoPointView();
   #wayPoints = [];
-  #allOffers = [];
-  #destinations = [];
-  #offersByType = [];
   #pointPresenter = new Map();
   #currentSortType = SortType.PRICE;
   #sourcedWayPoints = [];
@@ -31,12 +28,7 @@ export default class EventsPresenter {
 
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
-    this.#allOffers = [...this.#wayPointsModel.allOffers];
     this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
-    this.#destinations = [...this.#wayPointsModel.destinations];
-    this.#offersByType = [...this.#wayPointsModel.offersByType];
-    console.log(this.#offersByType)
-
     this.#renderBoard();
   };
 
@@ -103,30 +95,7 @@ export default class EventsPresenter {
   };
 
   #renderPointsList = () => {
-      for (let i = 0; i < this.#wayPoints.length; i++) {
-
-        const pointDestinations = this.#destinations.find(
-          (item) => item.id === this.#wayPoints[i].destination
-        );
-        this.#wayPoints[i].destinationInfo = pointDestinations;
-        console.log(this.#wayPoints[i].destinationInfo);
-
-
-
-        const selectedOffers = this.#allOffers.filter((item) =>
-          this.#wayPoints[i].offers.some((offerId) => offerId.id === item.id)
-        );
-        this.#wayPoints[i].selectedOffers = selectedOffers;
-
-
-        const allOffersForType = this.#offersByType.find(
-          (item) => item.type === this.#wayPoints[i].type);
-        this.#wayPoints[i].availableOffers = allOffersForType;
-
-
-
-        this.#renderPoint(this.#wayPoints[i]);
-      }
+        this.#wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
   }
 
   #renderBoard = () => {

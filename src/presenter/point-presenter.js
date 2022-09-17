@@ -7,6 +7,22 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+function getPointDestination(currentPoint, destinations) {
+  return destinations.find((item) => item.id === currentPoint.destination
+  );
+}
+
+function getPointOffers(currentPoint, allOffers) {
+  let selectedOffers = [];
+  selectedOffers = allOffers.filter((item) =>currentPoint.offers.some((offerId) => offerId.id === item.id));
+  return selectedOffers
+}
+
+function getAvailableOffers(currentPoint, offersByType) {
+  let availableOffers = [];
+  availableOffers = offersByType.find((item) => item.type ===currentPoint.type);
+  return availableOffers;
+}
 
 export default class PointPresenter {
 
@@ -41,13 +57,23 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
+    const destinationInfo = getPointDestination(wayPoint, this.#destinations);
+    const selectedOffers = getPointOffers(wayPoint, this.#allOffers);
+    const availableOffers = getAvailableOffers(wayPoint, this.#offersByType);
 
-    this.#pointComponent = new WayPointView(wayPoint);
+
+
+    wayPoint.destinationInfo = destinationInfo;
+    wayPoint.selectedOffers = selectedOffers;
+    wayPoint.availableOffers = availableOffers;
+
+    this.#pointComponent = new WayPointView(wayPoint, destinationInfo, selectedOffers, availableOffers);
     this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#offersByType);
+
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    // this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+    this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
 
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
