@@ -23,7 +23,9 @@ const offerTitles = [
   'Upgrade to a business class',
   'Rent a car',
   'Add breakfast',
-  'Take uber'
+  'Take uber',
+  'Take train',
+  'Add lunch'
 ];
 
 const cities = [

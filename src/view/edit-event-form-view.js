@@ -4,7 +4,8 @@ import { humanizeFullDate } from '../util.js';
 
 
 const editEventViewTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinationInfo, destination, availableOffers, selectedOffers} = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinationInfo, availableOffers, selectedOffers, offers} = wayPoint;
+  console.log(wayPoint.offers);
   const destinationPictures = destinationInfo.pictures;
   const destinationName = destinationInfo.name;
   const fullDateFrom = humanizeFullDate(dateFrom);
@@ -20,7 +21,7 @@ const editEventViewTemplate = (wayPoint) => {
   const offerTemplate = availableOffers.offers.map((item) => {
     const checked = selectedOffers.some((offerId) => offerId.id === item.id) ? 'checked' : '';
     return (`<div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.id}" type="checkbox" name="event-offer-${item.id}" ${checked}/>
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${item.id}" type="checkbox" name="event-offer-${item.id}" data-offer-id="${item.id}" ${checked}/>
             <label class="event__offer-label" for="event-offer-${item.id}">
             <span class="event__offer-title">${item.title}</span>
             &plus;&euro;&nbsp;
@@ -214,8 +215,9 @@ export default class EditEventFormView extends AbstractStatefulView{
     const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
     const selectedOfferIds = [];
     selectedOffers.forEach((selectedOffer) => selectedOfferIds.push(Number(selectedOffer.dataset.offerId)));
+    console.log(selectedOfferIds);
     this._setState({
-      offers: selectedOfferIds
+      offers: selectedOfferIds,
     });
   };
 

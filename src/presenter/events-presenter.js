@@ -2,6 +2,7 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
+import WayPointsModel from '../model/events-model.js';
 import { updateItem } from '../util.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
@@ -30,11 +31,11 @@ export default class EventsPresenter {
 
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
-    console.log(this.#wayPoints);
     this.#allOffers = [...this.#wayPointsModel.allOffers];
     this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
     this.#destinations = [...this.#wayPointsModel.destinations];
     this.#offersByType = [...this.#wayPointsModel.offersByType];
+    console.log(this.#offersByType)
 
     this.#renderBoard();
   };
@@ -70,9 +71,6 @@ export default class EventsPresenter {
     this.#sortPoints(sortType);
     this.#clearPointList();
     this.#renderPointsList();
-    // - Сортируем задачи
-    // - Очищаем список
-    // - Рендерим список заново
   };
 
 
@@ -87,7 +85,8 @@ export default class EventsPresenter {
 
 
   #renderPoint = (wayPoint) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handlePointChange, this.#handleModeChange);
+    const wayPointsModel = new WayPointsModel();
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handlePointChange, this.#handleModeChange, wayPointsModel);
 
     pointPresenter.init(wayPoint);
 

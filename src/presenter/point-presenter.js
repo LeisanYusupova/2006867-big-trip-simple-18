@@ -14,6 +14,10 @@ export default class PointPresenter {
   #changeData = null;
   #changeMode = null;
 
+  #wayPointsModel = null;
+  #destinations = null;
+  #allOffers = null;
+  #offersByType = null;
   #pointComponent = null;
   #pointEditComponent = null;
 
@@ -21,10 +25,14 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
 
 
-  constructor(pointListContainer, changeData, changeMode) {
+  constructor(pointListContainer, changeData, changeMode, wayPointsModel) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#wayPointsModel = wayPointsModel;
+    this.#allOffers = [...this.#wayPointsModel.allOffers];
+    this.#destinations = [...this.#wayPointsModel.destinations];
+    this.#offersByType = [...this.#wayPointsModel.offersByType];
   }
 
   init = (wayPoint) => {
@@ -35,7 +43,7 @@ export default class PointPresenter {
 
 
     this.#pointComponent = new WayPointView(wayPoint);
-    this.#pointEditComponent = new EditEventFormView(wayPoint);
+    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#offersByType);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
