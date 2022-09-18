@@ -8,8 +8,7 @@ const Mode = {
 };
 
 function getPointDestination(currentPoint, destinations) {
-  return destinations.find((item) => item.id === currentPoint.destination
-  );
+  return destinations.find((item) => item.id === currentPoint.destination);
 }
 
 function getPointOffers(currentPoint, allOffers) {

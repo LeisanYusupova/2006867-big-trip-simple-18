@@ -4,6 +4,7 @@ import { destinations } from '../mock/destinations.js';
 import { humanizeFullDate } from '../util.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { allOffers } from '../mock/offers.js';
 
 
 const editEventViewTemplate = (wayPoint) => {
@@ -205,6 +206,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   #destinationToggleHandler = (evt) => {
     console.log(destinations);
     const currentDestination = destinations.find((destination) => destination.name === evt.target.value);
+    console.log(currentDestination);
     this.updateElement({
       destination: currentDestination.id
     });
@@ -231,7 +233,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   #offersToggleHandler = () => {
     const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
     const selectedOfferIds = [];
-    selectedOffers.forEach((selectedOffer) => selectedOfferIds.push(Number(selectedOffer.dataset.offerId)));
+    selectedOffers.forEach((selectedOffer) => selectedOfferIds.push({id: Number(selectedOffer.dataset.offerId)}));
     console.log(selectedOfferIds);
     this._setState({
       offers: selectedOfferIds,
