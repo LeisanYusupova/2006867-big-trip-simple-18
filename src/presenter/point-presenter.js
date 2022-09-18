@@ -62,7 +62,6 @@ export default class PointPresenter {
     const availableOffers = getAvailableOffers(wayPoint, this.#offersByType);
 
 
-
     wayPoint.destinationInfo = destinationInfo;
     wayPoint.selectedOffers = selectedOffers;
     wayPoint.availableOffers = availableOffers;

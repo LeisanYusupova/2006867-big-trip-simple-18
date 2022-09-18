@@ -2,6 +2,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { destinations } from '../mock/destinations.js';
 import { humanizeFullDate } from '../util.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 
 const editEventViewTemplate = (wayPoint) => {
@@ -156,6 +158,8 @@ const editEventViewTemplate = (wayPoint) => {
 
 export default class EditEventFormView extends AbstractStatefulView{
 
+  #datepicker = null;
+
 
   constructor(wayPoint, destinations, allOffers, offersByType) {
     super();
@@ -166,6 +170,15 @@ export default class EditEventFormView extends AbstractStatefulView{
   get template() {
     return editEventViewTemplate(this._state);
   }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
+  };
 
   reset = (waypoint) => {
     this.updateElement(
@@ -238,6 +251,43 @@ export default class EditEventFormView extends AbstractStatefulView{
 
 
 
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(EditEventFormView.parseStateToPoint(this._state));
+  };
+
+  #setInnerHandlers = () => {
+    this.#setDatepickerFrom();
+    this.#setDatepickerTo();
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#priceToggleHandler);
+    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationToggleHandler);
+  }
+
+  #setDatepickerFrom = () => {
+    this.#datepicker = flatpickr (
+      this.element.querySelector('#event-start-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      }
+    );
+  };
+
+  #setDatepickerTo = () => {
+    this.#datepicker = flatpickr (
+      this.element.querySelector('#event-end-time-1'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler
+      }
+    );
+  };
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
@@ -245,18 +295,6 @@ export default class EditEventFormView extends AbstractStatefulView{
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
   };
 
-
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(EditEventFormView.parseStateToPoint(this._state));
-  };
-
-  #setInnerHandlers = () => {
-    this.element.querySelector('#event-price-1').addEventListener('input', this.#priceToggleHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationToggleHandler);
-  }
 
   static parsePointToState = (wayPoint, destinations, allOffers, offersByType) => ({...wayPoint,
     destinations: destinations,

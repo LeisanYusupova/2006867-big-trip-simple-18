@@ -7,6 +7,7 @@ const createWayPointTemplate = (wayPoint) => {
   console.log(offers);
   console.log(selectedOffers);
 
+
   const pointDestinations = wayPoint.destinationInfo;
 
   const timeFrom = dateFrom !== null
