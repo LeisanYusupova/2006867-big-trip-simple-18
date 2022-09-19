@@ -7,22 +7,47 @@ const Mode = {
   EDITING: 'EDITING',
 };
 
+function getPointDestination(currentPoint, destinations) {
+  return destinations.find((item) => item.id === currentPoint.destination);
+}
+
+function getPointOffers(currentPoint, allOffers) {
+  let selectedOffers = [];
+  selectedOffers = allOffers.filter((item) =>currentPoint.offers.some((offerId) => offerId.id === item.id));
+  return selectedOffers
+}
+
+function getAvailableOffers(currentPoint, offersByType) {
+  let availableOffers = [];
+  availableOffers = offersByType.find((item) => item.type ===currentPoint.type);
+  return availableOffers;
+}
 
 export default class PointPresenter {
 
   #pointListContainer = null;
   #changeData = null;
   #changeMode = null;
+
+  #wayPointsModel = null;
+  #destinations = null;
+  #allOffers = null;
+  #offersByType = null;
   #pointComponent = null;
   #pointEditComponent = null;
+
   #wayPoint = null;
   #mode = Mode.DEFAULT;
-  
 
-  constructor(pointListContainer, changeData, changeMode) {
+
+  constructor(pointListContainer, changeData, changeMode, wayPointsModel) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#wayPointsModel = wayPointsModel;
+    this.#allOffers = [...this.#wayPointsModel.allOffers];
+    this.#destinations = [...this.#wayPointsModel.destinations];
+    this.#offersByType = [...this.#wayPointsModel.offersByType];
   }
 
   init = (wayPoint) => {
@@ -31,12 +56,23 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
+    const destinationInfo = getPointDestination(wayPoint, this.#destinations);
+    const selectedOffers = getPointOffers(wayPoint, this.#allOffers);
+    const availableOffers = getAvailableOffers(wayPoint, this.#offersByType);
 
-    this.#pointComponent = new WayPointView(wayPoint);
-    this.#pointEditComponent = new EditEventFormView(wayPoint);
+
+    wayPoint.destinationInfo = destinationInfo;
+    wayPoint.selectedOffers = selectedOffers;
+    wayPoint.availableOffers = availableOffers;
+
+    this.#pointComponent = new WayPointView(wayPoint, destinationInfo, selectedOffers, availableOffers);
+    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#offersByType);
+
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#pointListContainer);
@@ -91,7 +127,13 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleTypeChange = (newType) => {
+    this.#wayPoint = {...this.#wayPoint, type: newType};
+    this.init(this.#wayPoint);
+  }
+
+  #handleFormSubmit = (wayPoint) => {
+    this.#changeData(wayPoint);
     this.#replaceFormToPoint();
   };
 

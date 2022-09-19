@@ -3,9 +3,11 @@ import { humanizeTaskDueDate, humanizePointTime} from '../util.js';
 
 
 const createWayPointTemplate = (wayPoint) => {
-  const {basePrice, type, dateFrom, dateTo, destinations, selectedOffers} = wayPoint;
+  const {basePrice, type, dateFrom, dateTo, destinationInfo, destination, selectedOffers, offers} = wayPoint;
+  console.log(offers);
+  console.log(selectedOffers);
 
-  const pointDestinations = wayPoint.destinations;
+  const pointDestinations = wayPoint.destinationInfo;
 
   const timeFrom = dateFrom !== null
     ? humanizePointTime(dateFrom)
@@ -57,16 +59,16 @@ const createWayPointTemplate = (wayPoint) => {
 export default class WayPointView extends AbstractView{
 
   #wayPoint = null;
-  #offer = null;
+  #selectedOffers = null;
 
-  constructor(wayPoint, offer) {
+  constructor(wayPoint, selectedOffers) {
     super();
     this.#wayPoint = wayPoint;
-    this.#offer = offer;
+    this.#selectedOffers = selectedOffers;
   }
 
   get template() {
-    return createWayPointTemplate(this.#wayPoint, this.#offer);
+    return createWayPointTemplate(this.#wayPoint, this.#selectedOffers);
   }
 
   setEditClickHandler = (callback) => {

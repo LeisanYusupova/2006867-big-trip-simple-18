@@ -1,4 +1,5 @@
-import { allOffers } from '../mock/offers.js';
+import { destinations } from '../mock/destinations.js';
+import { allOffers, offersByType } from '../mock/offers.js';
 import { generateWayPoints } from '../mock/waypoint.js';
 
 
@@ -7,8 +8,19 @@ export default class WayPointsModel {
   get wayPoints() {
     return this.#wayPoints;
   }
-  #offers = allOffers;
-  get offers() {
-    return this.#offers;
+
+  #allOffers = allOffers;
+  get allOffers() {
+    return this.#allOffers;
+  }
+
+  #destinations = destinations;
+  get destinations() {
+    return this.#destinations;
+  }
+
+  #offersByType = offersByType;
+  get offersByType() {
+    return this.#offersByType;
   }
 }

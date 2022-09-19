@@ -2,9 +2,8 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
+import WayPointsModel from '../model/events-model.js';
 import { updateItem } from '../util.js';
-import { destinations } from '../mock/destinations.js';
-import { offersByType } from '../mock/offers.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
 import { SortType } from '../const.js';
@@ -18,7 +17,6 @@ export default class EventsPresenter {
   #sortComponent = new SortingView();
   #noPointsComponent = new NoPointView();
   #wayPoints = [];
-  #offers = [];
   #pointPresenter = new Map();
   #currentSortType = SortType.PRICE;
   #sourcedWayPoints = [];
@@ -30,9 +28,7 @@ export default class EventsPresenter {
 
   init = () => {
     this.#wayPoints = [...this.#wayPointsModel.wayPoints];
-    this.#offers = [...this.#wayPointsModel.offers];
     this.#sourcedWayPoints = [...this.#wayPointsModel.wayPoints];
-
     this.#renderBoard();
   };
 
@@ -54,8 +50,6 @@ export default class EventsPresenter {
         console.log(this.#wayPoints);
         break;
       default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
         this.#wayPoints = [...this.#sourcedWayPoints];
     }
     this.#currentSortType = sortType;
@@ -69,9 +63,6 @@ export default class EventsPresenter {
     this.#sortPoints(sortType);
     this.#clearPointList();
     this.#renderPointsList();
-    // - Сортируем задачи
-    // - Очищаем список
-    // - Рендерим список заново
   };
 
 
@@ -86,7 +77,8 @@ export default class EventsPresenter {
 
 
   #renderPoint = (wayPoint) => {
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handlePointChange, this.#handleModeChange);
+    const wayPointsModel = new WayPointsModel();
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handlePointChange, this.#handleModeChange, wayPointsModel);
 
     pointPresenter.init(wayPoint);
 
@@ -103,26 +95,7 @@ export default class EventsPresenter {
   };
 
   #renderPointsList = () => {
-      for (let i = 0; i < this.#wayPoints.length; i++) {
-
-        const pointDestinations = destinations.find(
-          (item) => item.id === this.#wayPoints[i].destination
-        );
-        this.#wayPoints[i].destinations = pointDestinations;
-
-
-        const selectedOffers = this.#offers.filter((item) =>
-          this.#wayPoints[i].offers.some((offerId) => offerId.id === item.id)
-        );
-        this.#wayPoints[i].selectedOffers = selectedOffers;
-
-
-        const allOffersForType = offersByType.find(
-          (item) => item.type === this.#wayPoints[i].type);
-        this.#wayPoints[i].allOffers = allOffersForType;
-
-        this.#renderPoint(this.#wayPoints[i]);
-      }
+        this.#wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
   }
 
   #renderBoard = () => {
