@@ -1,6 +1,7 @@
 import {render, replace, remove} from '../framework/render.js';
 import EditEventFormView from '../view/edit-event-form-view.js';
 import WayPointView from '../view/way-point-view.js';
+import {UserAction, UpdateType} from '../const.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -133,7 +134,11 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = (wayPoint) => {
-    this.#changeData(wayPoint);
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      wayPoint,
+    );
     this.#replaceFormToPoint();
   };
 

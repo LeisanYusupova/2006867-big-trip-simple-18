@@ -188,6 +188,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   };
 
   #priceToggleHandler = (evt) => {
+    console.log(evt.target.value);
     this._setState({
       basePrice: evt.target.value,
     });

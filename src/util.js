@@ -14,20 +14,6 @@ const humanizePointTime = (date) => dayjs(date).format('HH:mm');
 
 const humanizeFullDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -58,4 +44,4 @@ const sortByPrice = (pointA, pointB) => {
 
 
 
-export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, updateItem, sortByDate, sortByPrice};
+export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice};
