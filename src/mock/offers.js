@@ -5,7 +5,7 @@ const allOffers = Array.from({length:offerTitles.length}, (_valuee, index) =>{
   return {
     id: index + 1,
     title: offerTitles[index],
-    price: getRandomInteger(10000)
+    price: getRandomInteger(1000)
   };
 });
 
@@ -16,7 +16,7 @@ const offersByType = Array.from({length: offersTypes.length}, (_value, index) =>
       return {
         id: index + 1,
         title: offerTitles[index],
-        price: getRandomInteger(10000)
+        price: getRandomInteger(1000)
       };
     })
   };
