@@ -2,11 +2,12 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
-import WayPointsModel from '../model/events-model.js';
+import DataModel from '../model/data-model.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
 import {SortType, UpdateType, UserAction} from '../const.js';
 import {render, RenderPosition, remove} from '../framework/render.js';
+
 
 
 export default class EventsPresenter {
@@ -50,7 +51,7 @@ export default class EventsPresenter {
         this.#wayPointsModel.addWayPoint(updateType, update);
         break;
       case UserAction.DELETE_TASK:
-        this.#wayPointsModel.deleteWaypoint(updateType, update);
+        this.#wayPointsModel.deleteWayPoint(updateType, update);
         break;
       }
   };
@@ -95,8 +96,8 @@ export default class EventsPresenter {
 
 
   #renderPoint = (wayPoint) => {
-    const wayPointsModel = new WayPointsModel();
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange, wayPointsModel);
+    const dataModel = new DataModel();
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange, dataModel);
 
     pointPresenter.init(wayPoint);
 

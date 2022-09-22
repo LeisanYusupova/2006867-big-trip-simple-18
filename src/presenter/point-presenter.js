@@ -1,7 +1,8 @@
 import {render, replace, remove} from '../framework/render.js';
 import EditEventFormView from '../view/edit-event-form-view.js';
-import WayPointView from '../view/way-point-view.js';
+import WayPointView from '../view/way-point-view.js'
 import {UserAction, UpdateType} from '../const.js';
+import { isDatesEqual } from '../util.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -29,8 +30,8 @@ export default class PointPresenter {
   #pointListContainer = null;
   #changeData = null;
   #changeMode = null;
+  #dataModel = null;
 
-  #wayPointsModel = null;
   #destinations = null;
   #allOffers = null;
   #offersByType = null;
@@ -41,14 +42,14 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
 
 
-  constructor(pointListContainer, changeData, changeMode, wayPointsModel) {
+  constructor(pointListContainer, changeData, changeMode, dataModel) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#wayPointsModel = wayPointsModel;
-    this.#allOffers = [...this.#wayPointsModel.allOffers];
-    this.#destinations = [...this.#wayPointsModel.destinations];
-    this.#offersByType = [...this.#wayPointsModel.offersByType];
+    this.#dataModel = dataModel;
+    this.#allOffers = [...this.#dataModel.allOffers];
+    this.#destinations = [...this.#dataModel.destinations];
+    this.#offersByType = [...this.#dataModel.offersByType];
   }
 
   init = (wayPoint) => {
@@ -134,11 +135,17 @@ export default class PointPresenter {
     this.init(this.#wayPoint);
   }
 
-  #handleFormSubmit = (wayPoint) => {
+  #handleFormSubmit = (update) => {
+
+    const isMinorUpdate =
+      !isDatesEqual(this.#wayPoint.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#wayPoint.dateTo, update.dateTo) ||
+      this.#wayPoint.basePrice !== update.basePrice;
+
     this.#changeData(
       UserAction.UPDATE_TASK,
-      UpdateType.MINOR,
-      wayPoint,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
     );
     this.#replaceFormToPoint();
   };

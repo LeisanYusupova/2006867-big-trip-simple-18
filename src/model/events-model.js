@@ -1,5 +1,3 @@
-import { destinations } from '../mock/destinations.js';
-import { allOffers, offersByType } from '../mock/offers.js';
 import { generateWayPoints } from '../mock/waypoint.js';
 import Observable from '../framework/observable.js';
 
@@ -10,20 +8,6 @@ export default class WayPointsModel extends Observable {
     return this.#wayPoints;
   }
 
-  #allOffers = allOffers;
-  get allOffers() {
-    return this.#allOffers;
-  }
-
-  #destinations = destinations;
-  get destinations() {
-    return this.#destinations;
-  }
-
-  #offersByType = offersByType;
-  get offersByType() {
-    return this.#offersByType;
-  }
 
   updateWayPoint = (updateType, update) => {
     const index = this.#wayPoints.findIndex((task) => task.id === update.id);
