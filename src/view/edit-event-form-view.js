@@ -165,6 +165,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   #eventTypeToggleHandler = (evt) => {
@@ -234,6 +235,12 @@ export default class EditEventFormView extends AbstractStatefulView{
     this._callback.formSubmit(EditEventFormView.parseStateToPoint(this._state));
   };
 
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    console.log('delete');
+    this._callback.deleteClick(EditEventFormView.parseStateToPoint(this._state));
+  }
+
   #setInnerHandlers = () => {
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
@@ -272,6 +279,11 @@ export default class EditEventFormView extends AbstractStatefulView{
     this.element.addEventListener('submit', this.#formSubmitHandler);
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formSubmitHandler);
   };
+
+  setDeleteClickHandler =(callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
+  }
 
 
   static parsePointToState = (wayPoint, destinations, allOffers, offersByType) => ({...wayPoint,

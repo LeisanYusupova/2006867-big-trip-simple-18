@@ -73,6 +73,7 @@ export default class PointPresenter {
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick)
 
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -142,6 +143,13 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
+  #handleDeleteClick = (wayPoint) => {
+    this.#changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      wayPoint,
+    );
+  }
   }
 
 

@@ -1,4 +1,7 @@
 import dayjs from 'dayjs';
+import {FilterType} from './const.js';
+
+const isPointFuture= (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -42,6 +45,11 @@ const sortByPrice = (pointA, pointB) => {
   return pointB.basePrice - pointA.basePrice;
 };
 
+const filter = {
+  [FilterType.ALL]: (points) =>points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isPointFuture(point.dateFrom))
+};
 
 
-export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice};
+
+export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter};
