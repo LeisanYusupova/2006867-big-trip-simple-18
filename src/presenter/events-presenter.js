@@ -3,10 +3,11 @@ import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
 import DataModel from '../model/data-model.js';
+import WayPointNewPresenter from './new-waypoint-presenter.js';
 import { filter } from '../util.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
-import {SortType, UpdateType, UserAction} from '../const.js';
+import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
 import {render, RenderPosition, remove} from '../framework/render.js';
 
 
@@ -18,23 +19,32 @@ export default class EventsPresenter {
 
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
-  #noPointsComponent = new NoPointView();
+  #noPointsComponent = null;
   #pointPresenter = new Map();
+  #wayPointNewPresenter = null;
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.ALL;
+  #dataModel = new DataModel();
 
 
   constructor(eventsContainer, wayPointsModel, filterModel) {
     this.#eventsContainer = eventsContainer;
     this.#wayPointsModel = wayPointsModel;
     this.#filterModel = filterModel;
+
+    this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction);
+
+
     this.#wayPointsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+
+
   }
 
   get wayPoints() {
-    const filterType = this.#filterModel.filter;
+    this.filterType = this.#filterModel.filter;
     const wayPoints = this.#wayPointsModel.wayPoints;
-    const filteredWayPoints = filter[filterType](wayPoints);
+    const filteredWayPoints = filter[this.#filterType](wayPoints);
 
     switch (this.#currentSortType) {
       case SortType.DAY:
@@ -98,14 +108,21 @@ export default class EventsPresenter {
     render(this.#sortComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
   };
 
+  createWayPoint = (callback) => {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#wayPointNewPresenter.init(callback);
+  };
+
   #handleModeChange = () => {
+    this.#wayPointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   };
 
 
   #renderPoint = (wayPoint) => {
-    const dataModel = new DataModel();
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange, dataModel);
+
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange, this.#dataModel);
 
     pointPresenter.init(wayPoint);
 
@@ -113,12 +130,14 @@ export default class EventsPresenter {
   }
 
   #renderNoPoints = () => {
+    this.#noPointsComponent = new NoPointView(this.#filterType);
     render(this.#noPointsComponent, this.#eventsListComponent.element);
   };
 
 
   #clearBoard = ({resetSortType = false} = {}) => {
 
+    this.#wayPointNewPresenter.destroy();
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
 
