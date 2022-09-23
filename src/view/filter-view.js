@@ -5,8 +5,8 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
 
   return (
     `<div class="trip-filters__filter">
-      <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future">
-      <label class="trip-filters__filter-label" for="filter-future">Future</label>
+      <input id="filter-${name}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${name}" ${currentFilterType === type ? 'checked' : ''}>
+      <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
     </div>`
   );
 };
@@ -17,6 +17,7 @@ const createFilterTemplate = (filterItems, currentFilterType) => {
 
     return (
     `<form class="trip-filters" action="#" method="get">
+    ${filterItemsTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
   )

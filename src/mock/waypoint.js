@@ -1,7 +1,7 @@
 import { getRandomInteger } from '../util.js';
 import { destinations } from './destinations.js';
 
-const COUNT_OF_EVENTS = 6;
+const COUNT_OF_EVENTS = 5;
 
 const generatePointType = () => {
   const pointTypes = [
