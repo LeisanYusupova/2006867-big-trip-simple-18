@@ -16,6 +16,7 @@ const BLANK_POINT = {
 
 const editEventViewTemplate = (wayPoint) => {
   const {basePrice, dateFrom, dateTo, destination, type, offers, offersByType, destinations} = wayPoint;
+
   const tripDestination = destinations.find((pointDestination) => (pointDestination.id === destination));
   const fullDateFrom = humanizeFullDate(dateFrom);
   const fullDateTo = humanizeFullDate(dateTo);
@@ -157,7 +158,7 @@ export default class EditEventFormView extends AbstractStatefulView{
 
 
 
-  constructor(wayPoint, destinations, allOffers, offersByType ) {
+  constructor(wayPoint = BLANK_POINT, destinations, allOffers, offersByType ) {
     super();
     this._state = EditEventFormView.parsePointToState(wayPoint, destinations, allOffers, offersByType);
     this.#setInnerHandlers();

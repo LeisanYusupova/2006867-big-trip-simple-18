@@ -1,12 +1,33 @@
-import { generateWayPoints } from '../mock/waypoint.js';
+
 import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
 
 export default class WayPointsModel extends Observable {
-  #wayPoints = generateWayPoints();
+
+  #pointsApiService = null;
+  #wayPoints = [];
+
+  constructor(pointsApiService) {
+    super();
+    this.#pointsApiService = pointsApiService;
+  }
+
   get wayPoints() {
     return this.#wayPoints;
   }
+
+  init = async () => {
+    try {
+      const wayPoints = await this.#pointsApiService.wayPoints;
+      this.#wayPoints = wayPoints.map(this.#adaptToClient);
+      console.log(this.#wayPoints);
+    } catch(err) {
+      this.#wayPoints = [];
+    }
+    this._notify(UpdateType.INIT);
+  };
+
 
 
   updateWayPoint = (updateType, update) => {
@@ -47,5 +68,21 @@ export default class WayPointsModel extends Observable {
     ];
 
     this._notify(updateType);
+  };
+
+  #adaptToClient = (point) => {
+    const adaptedPoint = {...point,
+      dateFrom: point['date_from'],
+      dateTo: point['date_to'],
+      basePrice: point['base_price'],
+    };
+
+    // Ненужные ключи мы удаляем
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['base_price'];
+
+
+    return adaptedPoint;
   };
 }

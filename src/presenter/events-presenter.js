@@ -90,7 +90,11 @@ export default class EventsPresenter {
         this.#clearBoard();
         this.#renderBoard({resetSortType: true});
         break;
-      }
+      case UpdateType.INIT:
+        this.#clearBoard();
+        this.#renderBoard();
+        break;
+    }
   };
 
 
