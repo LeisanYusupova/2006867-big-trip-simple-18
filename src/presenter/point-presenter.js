@@ -45,14 +45,11 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#allOffers = offersModel.offersByType;
-    console.log(this.#allOffers);
     this.#selectedOffers = offersModel.getSelectedOffers(this.#wayPoint);
-    console.log(this.#selectedOffers);
     this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
-    console.log(this.#currentOffersByType);
+
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
     this.#destinations = destinationsModel.destinations;
-    console.log(this.#destinations);
 
 
     this.#pointComponent = new WayPointView(wayPoint, this.#currentDestination, this.#selectedOffers);
