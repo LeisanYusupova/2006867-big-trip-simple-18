@@ -7,9 +7,7 @@ export default class WayPointNewPresenter {
 
   #pointListContainer = null;
   #changeData = null;
-  #dataModel = null;
   #destroyCallback = null;
-
   #pointEditComponent = null;
 
 
@@ -18,7 +16,7 @@ export default class WayPointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback, dataModel) => {
+  init = (callback, offersModel, destinationsModel) => {
 
     this.#destroyCallback = callback;
 
@@ -26,12 +24,10 @@ export default class WayPointNewPresenter {
       return;
     }
 
-    const allOffers = dataModel.allOffers;
-    const destinations = dataModel.destinations;
-    const offersByType = dataModel.offersByType;
+    const allOffers = offersModel.offersByType;
+    const destinations = destinationsModel.destinations;
 
-
-    this.#pointEditComponent = new EditEventFormView(destinations, allOffers, offersByType);
+    this.#pointEditComponent = new EditEventFormView(destinations, allOffers);
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     // this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);

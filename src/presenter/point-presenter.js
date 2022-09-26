@@ -4,71 +4,58 @@ import WayPointView from '../view/way-point-view.js'
 import {UserAction, UpdateType} from '../const.js';
 import { isDatesEqual } from '../util.js';
 
+
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
 
-function getPointDestination(currentPoint, destinations) {
-  return destinations.find((item) => item.id === currentPoint.destination);
-}
 
-function getPointOffers(currentPoint, allOffers) {
-  let selectedOffers = [];
-  selectedOffers = allOffers.filter((item) =>currentPoint.offers.some((offerId) => offerId.id === item.id));
-  return selectedOffers
-}
-
-function getAvailableOffers(currentPoint, offersByType) {
-  let availableOffers = [];
-  availableOffers = offersByType.find((item) => item.type ===currentPoint.type);
-  return availableOffers;
-}
 
 export default class PointPresenter {
 
   #pointListContainer = null;
   #changeData = null;
   #changeMode = null;
-  #dataModel = null;
 
-  #destinations = null;
-  #allOffers = null;
-  #offersByType = null;
+
   #pointComponent = null;
   #pointEditComponent = null;
 
+
   #wayPoint = null;
+  #allOffers = null;
+  #selectedOffers = null;
+  #currentOffersByType = null;
+  #currentDestination = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor(pointListContainer, changeData, changeMode, dataModel) {
+  constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#dataModel = dataModel;
-    this.#allOffers = [...this.#dataModel.allOffers];
-    this.#destinations = [...this.#dataModel.destinations];
-    this.#offersByType = [...this.#dataModel.offersByType];
   }
 
-  init = (wayPoint) => {
+  init = (wayPoint, offersModel, destinationsModel) => {
     this.#wayPoint = wayPoint;
-
+    console.log(wayPoint);
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    const destinationInfo = getPointDestination(wayPoint, this.#destinations);
-    const selectedOffers = getPointOffers(wayPoint, this.#allOffers);
-    const availableOffers = getAvailableOffers(wayPoint, this.#offersByType);
+    this.#allOffers = offersModel.offersByType;
+    console.log(this.#allOffers);
+    this.#selectedOffers = offersModel.getSelectedOffers(this.#wayPoint);
+    this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
+    console.log(this.#currentOffersByType);
+    this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
+    this.#destinations = destinationsModel.destinations;
+    console.log(this.#destinations);
 
 
-    wayPoint.destinationInfo = destinationInfo;
-    wayPoint.selectedOffers = selectedOffers;
-    wayPoint.availableOffers = availableOffers;
-
-    this.#pointComponent = new WayPointView(wayPoint, destinationInfo, selectedOffers, availableOffers);
-    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#offersByType);
+    this.#pointComponent = new WayPointView(wayPoint, this.#currentDestination, this.#selectedOffers);
+    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);

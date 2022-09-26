@@ -2,7 +2,6 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
-import DataModel from '../model/data-model.js';
 import WayPointNewPresenter from './new-waypoint-presenter.js';
 import { filter } from '../util.js';
 import { sortByDate } from '../util.js';
@@ -16,6 +15,8 @@ export default class EventsPresenter {
   #eventsContainer = null;
   #wayPointsModel = null;
   #filterModel = null;
+  #offersModel = null;
+  #destinationsModel = null;
 
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
@@ -24,12 +25,14 @@ export default class EventsPresenter {
   #wayPointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
-  #dataModel = new DataModel();
 
 
-  constructor(eventsContainer, wayPointsModel, filterModel) {
+
+  constructor(eventsContainer, wayPointsModel, offersModel, destinationsModel, filterModel ) {
     this.#eventsContainer = eventsContainer;
     this.#wayPointsModel = wayPointsModel;
+    this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
     this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction);
@@ -122,10 +125,8 @@ export default class EventsPresenter {
 
   #renderPoint = (wayPoint) => {
 
-    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange, this.#dataModel);
-
-    pointPresenter.init(wayPoint);
-
+    const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange);
+    pointPresenter.init(wayPoint, this.#offersModel, this.#destinationsModel);
     this.#pointPresenter.set(wayPoint.id, pointPresenter);
   }
 

@@ -20,4 +20,11 @@ const FilterType = {
   FUTURE: 'future',
 };
 
-export {SortType, UserAction, UpdateType, FilterType};
+const ActionType = {
+  EDIT: 'edit',
+  CREATE: 'create',
+};
+
+
+
+export {SortType, UserAction, UpdateType, FilterType, ActionType};
