@@ -1,14 +1,19 @@
 import NewEventButtonView from './view/new-event-button-view.js';
-import { render } from './framework/render.js';
+
 import EventsPresenter from './presenter/events-presenter.js';
 import FilterPresenter from './presenter/filter-presenter.js';
+
 import WayPointsModel from './model/events-model.js';
 import FilterModel from './model/filter-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
+
+
 import PointsApiService from './points-api-service.js';
 import OffersApiService from './offers-api-service.js';
 import DestinationsApiService from './destinations-api-service.js';
+
+import { render } from './framework/render.js';
 
 
 const AUTHORIZATION = 'Basic qwerty';
@@ -43,5 +48,5 @@ newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, 
 // filterPresenter.init();
 eventsPresenter.init();
 wayPointsModel.init();
-offersModel.init();
 destinationsModel.init();
+offersModel.init();

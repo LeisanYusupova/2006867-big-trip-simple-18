@@ -158,7 +158,7 @@ export default class EditEventFormView extends AbstractStatefulView{
 
 
 
-  constructor(wayPoint = BLANK_POINT, destinations, allOffers, offersByType ) {
+  constructor(wayPoint = BLANK_POINT, destinations, allOffers, offersByType) {
     super();
     this._state = EditEventFormView.parsePointToState(wayPoint, destinations, allOffers, offersByType);
     this.#setInnerHandlers();

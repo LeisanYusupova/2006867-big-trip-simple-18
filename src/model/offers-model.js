@@ -3,8 +3,9 @@ import Observable from "../framework/observable";
 export default class OffersModel extends Observable {
 
   #offersApiService = null;
-  #offers = [];
   #offersByType = null;
+  #offers = [];
+
 
 
 
@@ -14,9 +15,7 @@ export default class OffersModel extends Observable {
   }
 
 
-  get offersByType() {
-    return this.#offers;
-  }
+
 
   init = async () => {
     try {
@@ -29,8 +28,13 @@ export default class OffersModel extends Observable {
     }
   };
 
+  get offersByType() {
+    return this.#offers;
+  }
+
 
   getCurrentOffersByType = (point) => {
+    console.log(this.#offersByType);
     const currentOffersByType = this.#offersByType.find((offer) => offer.type === point.type);
     console.log(currentOffersByType);
     return currentOffersByType;
@@ -38,6 +42,7 @@ export default class OffersModel extends Observable {
 
   getSelectedOffers = (point) => {
     const currentOffersByType = this.getCurrentOffersByType(point);
+    console.log(currentOffersByType);
     if (currentOffersByType) {
       const selectedOffers = currentOffersByType.offers.filter((offer) => point.offers.includes(offer.id));
       return selectedOffers;
