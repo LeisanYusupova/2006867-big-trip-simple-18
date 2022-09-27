@@ -1,27 +1,16 @@
 import {render, replace, remove} from '../framework/render.js';
 import EditEventFormView from '../view/edit-event-form-view.js';
-import WayPointView from '../view/way-point-view.js';
+import WayPointView from '../view/way-point-view.js'
+import {UserAction, UpdateType} from '../const.js';
+import { isDatesEqual } from '../util.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
 
-function getPointDestination(currentPoint, destinations) {
-  return destinations.find((item) => item.id === currentPoint.destination);
-}
 
-function getPointOffers(currentPoint, allOffers) {
-  let selectedOffers = [];
-  selectedOffers = allOffers.filter((item) =>currentPoint.offers.some((offerId) => offerId.id === item.id));
-  return selectedOffers
-}
-
-function getAvailableOffers(currentPoint, offersByType) {
-  let availableOffers = [];
-  availableOffers = offersByType.find((item) => item.type ===currentPoint.type);
-  return availableOffers;
-}
 
 export default class PointPresenter {
 
@@ -29,49 +18,49 @@ export default class PointPresenter {
   #changeData = null;
   #changeMode = null;
 
-  #wayPointsModel = null;
-  #destinations = null;
-  #allOffers = null;
-  #offersByType = null;
+
   #pointComponent = null;
   #pointEditComponent = null;
 
+
   #wayPoint = null;
+  #allOffers = null;
+  #selectedOffers = null;
+  #currentOffersByType = null;
+  #currentDestination = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
 
-  constructor(pointListContainer, changeData, changeMode, wayPointsModel) {
+  constructor(pointListContainer, changeData, changeMode) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#wayPointsModel = wayPointsModel;
-    this.#allOffers = [...this.#wayPointsModel.allOffers];
-    this.#destinations = [...this.#wayPointsModel.destinations];
-    this.#offersByType = [...this.#wayPointsModel.offersByType];
   }
 
-  init = (wayPoint) => {
+  init = (wayPoint, offersModel, destinationsModel) => {
     this.#wayPoint = wayPoint;
-
+    console.log(wayPoint);
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    const destinationInfo = getPointDestination(wayPoint, this.#destinations);
-    const selectedOffers = getPointOffers(wayPoint, this.#allOffers);
-    const availableOffers = getAvailableOffers(wayPoint, this.#offersByType);
+    this.#allOffers = offersModel.offersByType;
+    this.#selectedOffers = offersModel.getSelectedOffers(this.#wayPoint);
+    this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
+
+    this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
+    console.log(this.#currentDestination);
+    this.#destinations = destinationsModel.destinations;
 
 
-    wayPoint.destinationInfo = destinationInfo;
-    wayPoint.selectedOffers = selectedOffers;
-    wayPoint.availableOffers = availableOffers;
-
-    this.#pointComponent = new WayPointView(wayPoint, destinationInfo, selectedOffers, availableOffers);
-    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#offersByType);
+    this.#pointComponent = new WayPointView(wayPoint, this.#currentDestination, this.#selectedOffers);
+    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick)
 
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -132,11 +121,28 @@ export default class PointPresenter {
     this.init(this.#wayPoint);
   }
 
-  #handleFormSubmit = (wayPoint) => {
-    this.#changeData(wayPoint);
+  #handleFormSubmit = (update) => {
+
+    const isMinorUpdate =
+      !isDatesEqual(this.#wayPoint.dateFrom, update.dateFrom) ||
+      !isDatesEqual(this.#wayPoint.dateTo, update.dateTo) ||
+      this.#wayPoint.basePrice !== update.basePrice;
+
+    this.#changeData(
+      UserAction.UPDATE_TASK,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      update,
+    );
     this.#replaceFormToPoint();
   };
 
+  #handleDeleteClick = (wayPoint) => {
+    this.#changeData(
+      UserAction.DELETE_TASK,
+      UpdateType.MINOR,
+      wayPoint,
+    );
+  }
   }
 
 

@@ -49,4 +49,5 @@ const photoDescriptions = [
   'London Bridge'
 ];
 
+
 export {photos, offersTypes, offerTitles, photoDescriptions, descriptions, cities};

@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import {FilterType} from './const.js';
+
+const isPointFuture= (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
+
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -13,20 +18,6 @@ const humanizeTaskDueDate = (dueDate) => dayjs(dueDate).format('D MMMM');
 const humanizePointTime = (date) => dayjs(date).format('HH:mm');
 
 const humanizeFullDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
-
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
 
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
@@ -56,6 +47,11 @@ const sortByPrice = (pointA, pointB) => {
   return pointB.basePrice - pointA.basePrice;
 };
 
+const filter = {
+  [FilterType.ALL]: (points) =>points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isPointFuture(point.dateFrom))
+};
 
 
-export {getRandomInteger, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, updateItem, sortByDate, sortByPrice};
+
+export {getRandomInteger, isDatesEqual, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter};
