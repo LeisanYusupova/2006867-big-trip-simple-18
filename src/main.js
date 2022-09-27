@@ -48,5 +48,6 @@ newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, 
 // filterPresenter.init();
 eventsPresenter.init();
 wayPointsModel.init();
-destinationsModel.init();
 offersModel.init();
+destinationsModel.init();
+

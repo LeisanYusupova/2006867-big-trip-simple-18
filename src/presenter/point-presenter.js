@@ -49,6 +49,7 @@ export default class PointPresenter {
     this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
 
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
+    console.log(this.#currentDestination);
     this.#destinations = destinationsModel.destinations;
 
 
