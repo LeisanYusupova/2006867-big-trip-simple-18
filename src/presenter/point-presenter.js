@@ -40,7 +40,7 @@ export default class PointPresenter {
 
   init = (wayPoint, offersModel, destinationsModel) => {
     this.#wayPoint = wayPoint;
-    console.log(wayPoint);
+
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
@@ -49,7 +49,6 @@ export default class PointPresenter {
     this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
 
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
-    console.log(this.#currentDestination);
     this.#destinations = destinationsModel.destinations;
 
 
@@ -60,6 +59,7 @@ export default class PointPresenter {
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+    this.#pointEditComponent.setCloseFormHandler(this.#handleCloseForm);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick)
 
 
@@ -133,6 +133,11 @@ export default class PointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
+    this.#replaceFormToPoint();
+  };
+
+  #handleCloseForm = () => {
+    this.#pointEditComponent.reset(this.#wayPoint);
     this.#replaceFormToPoint();
   };
 

@@ -5,7 +5,7 @@ import { humanizeTaskDueDate, humanizePointTime} from '../util.js';
 const createWayPointTemplate = (wayPoint, destination, offers) => {
   const {basePrice, type, dateFrom, dateTo} = wayPoint;
   const {name} = destination;
-  console.log(offers);
+
 
   const timeFrom = dateFrom !== null
     ? humanizePointTime(dateFrom)
