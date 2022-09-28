@@ -232,23 +232,20 @@ export default class EditEventFormView extends AbstractStatefulView{
   #offersToggleHandler = () => {
     const selectedOffers = this.element.querySelectorAll('.event__offer-checkbox:checked');
     const selectedOfferIds = [];
-    selectedOffers.forEach((selectedOffer) => selectedOfferIds.push({id: Number(selectedOffer.dataset.offerId)}));
+    selectedOffers.forEach((selectedOffer) => selectedOfferIds.push(Number(selectedOffer.dataset.offerId)));
     console.log(selectedOfferIds);
     this._setState({
       offers: selectedOfferIds,
     });
   };
 
-  setTypeChangeHandler = (callback) => {
-    this._callback.typeChange = callback;
-    this.element.querySelectorAll('.event__type-input').forEach((item) => {
-      item.addEventListener('input', this.#typeChangeHandler)
-    })
-  }
-
-  #typeChangeHandler = (evt) => {
-    this._callback.typeChange(evt.currentTarget.value);
-  }
+  #typeToggleHandler = (evt) => {
+    this.updateElement({
+      type: evt.target.value,
+      offers: [],
+      offersByType: this._state.allOffers.find((offers) => offers.type === evt.target.value)
+    });
+  };
 
 
   #formSubmitHandler = (evt) => {
@@ -272,7 +269,7 @@ export default class EditEventFormView extends AbstractStatefulView{
     this.#setDatepickerTo();
     this.element.querySelector('#event-price-1').addEventListener('input', this.#priceToggleHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
-    this.element.querySelector('.event__type-list').addEventListener('change', this.#eventTypeToggleHandler);
+    this.element.querySelector('.event__type-list').addEventListener('change', this.#typeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationToggleHandler);
   }
 
@@ -299,6 +296,8 @@ export default class EditEventFormView extends AbstractStatefulView{
       }
     );
   };
+
+
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;

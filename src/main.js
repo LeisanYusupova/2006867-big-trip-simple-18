@@ -41,13 +41,17 @@ const handleNewEventButtonClick = () => {
   newEventButtonComponent.element.disabled = true;
 };
 
-render(newEventButtonComponent, siteMainElement);
-newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, destinationsModel );
+
+
 
 
 // filterPresenter.init();
-eventsPresenter.init();
-wayPointsModel.init();
-offersModel.init();
+
 destinationsModel.init();
+offersModel.init();
+eventsPresenter.init();
+wayPointsModel.init().finally(() => {
+  render(newEventButtonComponent, siteMainElement);
+  newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, destinationsModel );
+})
 

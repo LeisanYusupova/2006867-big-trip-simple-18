@@ -2,6 +2,7 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
+import LoadingView from '../view/loading-view.js';
 import WayPointNewPresenter from './new-waypoint-presenter.js';
 import { filter } from '../util.js';
 import { sortByDate } from '../util.js';
@@ -19,12 +20,16 @@ export default class EventsPresenter {
   #destinationsModel = null;
 
   #eventsListComponent = new EventsListView();
+  #loadingComponent = new LoadingView();
+
+
   #sortComponent = null;
   #noPointsComponent = null;
   #pointPresenter = new Map();
   #wayPointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
 
 
@@ -35,7 +40,7 @@ export default class EventsPresenter {
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction);
+    this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#wayPointsModel);
 
 
     this.#wayPointsModel.addObserver(this.#handleModelEvent);
@@ -91,6 +96,8 @@ export default class EventsPresenter {
         this.#renderBoard({resetSortType: true});
         break;
       case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard();
         break;
@@ -147,6 +154,7 @@ export default class EventsPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noPointsComponent);
 
     if (resetSortType) {
@@ -159,11 +167,21 @@ export default class EventsPresenter {
         wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
   }
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
+
   #renderBoard = () => {
     const wayPoints = this.wayPoints;
     const wayPointsCount = wayPoints.length;
 
     render(this.#eventsListComponent, this.#eventsContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (wayPointsCount === 0) {
       console.log('noPoints');

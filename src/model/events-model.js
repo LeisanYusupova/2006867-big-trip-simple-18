@@ -30,21 +30,29 @@ export default class WayPointsModel extends Observable {
 
 
 
-  updateWayPoint = (updateType, update) => {
+  updateWayPoint = async(updateType, update) => {
     const index = this.#wayPoints.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t update unexisting task');
     }
 
+    try {
+      const response = await this.#pointsApiService.updatePoint(update);
+      const updatedWaypoint = this.#adaptToClient(response);
+
     this.#wayPoints = [
       ...this.#wayPoints.slice(0, index),
-      update,
+      updatedWaypoint,
       ...this.#wayPoints.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
-  };
+    this._notify(updateType, updatedWaypoint);
+  } catch(err) {
+    throw new Error('Can\'t update task');
+  }
+};
+
 
   addWayPoint = (updateType, update) => {
     this.#wayPoints = [
