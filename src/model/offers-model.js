@@ -3,35 +3,29 @@ import { UpdateType,  } from '../const.js';
 
 export default class OffersModel extends Observable {
 
-  #offersApiService = null;
+  #pointsApiService = null;
   #offersByType = null;
-  #offers = [];
 
 
-
-
-  constructor(offersApiService) {
+  constructor(pointsApiService) {
     super();
-    this.#offersApiService = offersApiService;
+    this.#pointsApiService = pointsApiService;
   }
 
+  get offersByType() {
+    return this.#offersByType;
+  }
 
   init = async () => {
     try {
-      const offers = await this.#offersApiService.offers;
-      this.#offersByType = offers;
-      console.log(this.#offersByType);
-      return  this.#offersByType;
+      this.#offersByType = await this.#pointsApiService.offers;
     } catch(err) {
-      this.#offers = [];
+      this.#offersByType = [];
     } finally {
       this._notify(UpdateType.INIT);
     }
   };
 
-  get offersByType() {
-    return this.#offers;
-  }
 
 
   getCurrentOffersByType = (point) => {

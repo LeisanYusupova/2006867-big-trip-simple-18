@@ -51,9 +51,8 @@ export default class PointPresenter {
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
     this.#destinations = destinationsModel.destinations;
 
-
-    this.#pointComponent = new WayPointView(wayPoint, this.#currentDestination, this.#selectedOffers);
-    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
+    this.#pointComponent = new WayPointView(this.#wayPoint, this.#currentDestination, this.#selectedOffers);
+    this.#pointEditComponent = new EditEventFormView(this.#wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
@@ -72,7 +71,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -87,6 +87,24 @@ export default class PointPresenter {
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
       this.#replaceFormToPoint();
+    }
+  };
+
+  setSaving = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
     }
   };
 
@@ -128,7 +146,6 @@ export default class PointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
-    this.#replaceFormToPoint();
   };
 
   #handleCloseForm = () => {

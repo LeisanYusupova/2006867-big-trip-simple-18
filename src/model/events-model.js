@@ -54,35 +54,45 @@ export default class WayPointsModel extends Observable {
 };
 
 
-  addWayPoint = (updateType, update) => {
-    this.#wayPoints = [
-      update,
-      ...this.#wayPoints,
-    ];
+  addWayPoint = async (updateType, update) => {
 
-    this._notify(updateType, update);
+    try {
+      const response = await this.#pointsApiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#wayPoints = [
+        newPoint,
+        ...this.#wayPoints,
+      ];
+
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add task');
+    }
   };
 
-  deleteWayPoint = (updateType, update) => {
+  deleteWayPoint = async (updateType, update) => {
     const index = this.#wayPoints.findIndex((task) => task.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting task');
     }
-
-    this.#wayPoints = [
-      ...this.#wayPoints.slice(0, index),
-      ...this.#wayPoints.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    try {
+      await this.#pointsApiService.deletePoint(update);
+      this.#wayPoints = [
+        ...this.#wayPoints.slice(0, index),
+        ...this.#wayPoints.slice(index + 1),
+      ];
+      this._notify(updateType);
+    }  catch(err) {
+      throw new Error('Can\'t delete task');
+    }
   };
 
   #adaptToClient = (point) => {
     const adaptedPoint = {...point,
-      dateFrom: point['date_from'],
-      dateTo: point['date_to'],
-      basePrice: point['base_price'],
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      basePrice: point['base_price']
     };
 
     // Ненужные ключи мы удаляем

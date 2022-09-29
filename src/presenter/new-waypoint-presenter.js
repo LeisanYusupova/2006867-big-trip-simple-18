@@ -33,7 +33,6 @@ export default class WayPointNewPresenter {
     this.#pointEditComponent = new EditEventFormView(destinations, allOffers);
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    // this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
@@ -60,18 +59,21 @@ export default class WayPointNewPresenter {
     }
   };
 
+  setSaving = () => {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
 
-  // #handleTypeChange = (newType) => {
-  //   this.#wayPoint = {...this.#wayPoint, type: newType};
-  //   this.init(this.#wayPoint);
-  // }
 
-  #handleFormSubmit = (update) => {
+
+  #handleFormSubmit = (wayPoint) => {
 
     this.#changeData(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
-      {id: 6, ...update},
+      wayPoint,
     );
     this.destroy();
   };

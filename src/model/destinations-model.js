@@ -3,13 +3,13 @@ import { UpdateType } from '../const.js';
 
 export default class DestinationsModel extends Observable {
 
-  #destinationsApiService = null;
+  #pointsApiService = null;
   #destinations = [];
 
 
-  constructor(destinationsApiService) {
+  constructor(pointsApiService) {
     super();
-    this.#destinationsApiService = destinationsApiService;
+    this.#pointsApiService = pointsApiService;
   }
 
 
@@ -19,9 +19,7 @@ export default class DestinationsModel extends Observable {
 
   init = async () => {
     try {
-      const destinations = await this.#destinationsApiService.destinations;
-      this.#destinations = destinations;
-      return this.#destinations;
+      this.#destinations  = await  this.#pointsApiService.destinations;
     } catch(err) {
       this.#destinations = [];
     }finally {
