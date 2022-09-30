@@ -28,7 +28,7 @@ const wayPointsModel = new WayPointsModel(pointsApiService);
 const offersModel = new OffersModel(pointsApiService);
 const destinationsModel = new DestinationsModel(pointsApiService);
 
-const filterPresenter = new FilterPresenter(siteFilterElement, wayPointsModel, filterModel);
+const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, wayPointsModel);
 const newEventButtonComponent = new NewEventButtonView();
 const eventsPresenter = new EventsPresenter(siteContentElement, wayPointsModel, offersModel, destinationsModel, filterModel);
 
@@ -45,7 +45,7 @@ const handleNewEventButtonClick = () => {
 
 
 
-// filterPresenter.init();
+filterPresenter.init();
 eventsPresenter.init();
 
 Promise.all([offersModel.init(), destinationsModel.init()])

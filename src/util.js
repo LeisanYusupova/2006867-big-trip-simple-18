@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import {FilterType} from './const.js';
 
-const isPointFuture= (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
@@ -52,6 +51,8 @@ const filter = {
   [FilterType.FUTURE]: (points) => points.filter((point) => isPointFuture(point.dateFrom))
 };
 
+const isPointFuture = (dueDate) => dayjs(dueDate).isAfter(dayjs(), 'D') || dayjs(dueDate).isSame(dayjs(), 'D');
 
 
-export {getRandomInteger, isDatesEqual, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter};
+
+export {getRandomInteger, isDatesEqual, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter, isPointFuture};

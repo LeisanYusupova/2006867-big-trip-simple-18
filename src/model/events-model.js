@@ -1,12 +1,14 @@
 
 import Observable from '../framework/observable.js';
 import { UpdateType } from '../const.js';
+import { isPointFuture } from '../util.js';
 
 
 export default class WayPointsModel extends Observable {
 
   #pointsApiService = null;
   #wayPoints = [];
+  #availabilityFuturePoints = false;
 
   constructor(pointsApiService) {
     super();
@@ -15,6 +17,10 @@ export default class WayPointsModel extends Observable {
 
   get wayPoints() {
     return this.#wayPoints;
+  }
+
+  get availabilityFuturePoints() {
+    return this.#availabilityFuturePoints;
   }
 
   init = async () => {
@@ -88,14 +94,17 @@ export default class WayPointsModel extends Observable {
     }
   };
 
+  #checkPointIsFuture = (point) => isPointFuture(point.dateFrom);
+
   #adaptToClient = (point) => {
     const adaptedPoint = {...point,
       dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
       dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
       basePrice: point['base_price']
     };
-
-    // Ненужные ключи мы удаляем
+    if (this.#checkPointIsFuture(adaptedPoint)) {
+      this.#availabilityFuturePoints = true;
+    }
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['base_price'];

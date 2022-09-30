@@ -64,6 +64,18 @@ export default class WayPointNewPresenter {
     });
   };
 
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  };
+
 
 
   #handleFormSubmit = (wayPoint) => {

@@ -9,8 +9,12 @@ import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
 import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
 import {render, RenderPosition, remove} from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
-
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class EventsPresenter {
   #eventsContainer = null;
@@ -30,7 +34,7 @@ export default class EventsPresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.ALL;
   #isLoading = true;
-
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
 
   constructor(eventsContainer, wayPointsModel, offersModel, destinationsModel, filterModel ) {
@@ -60,7 +64,7 @@ export default class EventsPresenter {
       case SortType.PRICE:
         return filteredWayPoints.sort(sortByPrice);
     }
-    return filteredWayPoints;
+    return this.#wayPointsModel.wayPoints;
   }
 
 
@@ -68,21 +72,35 @@ export default class EventsPresenter {
     this.#renderBoard();
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_TASK:
         this.#pointPresenter.get(update.id).setSaving();
+        try {
         this.#wayPointsModel.updateWayPoint(updateType, update);
+      } catch(err) {
+        this.#pointPresenter.get(update.id).setAborting();
+      }
         break;
       case UserAction.ADD_TASK:
         this.#wayPointNewPresenter.setSaving();
+        try {
         this.#wayPointsModel.addWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_TASK:
         this.#pointPresenter.get(update.id).setDeleting();
+        try {
         this.#wayPointsModel.deleteWayPoint(updateType, update);
+      } catch(err) {
+        this.#pointPresenter.get(update.id).setAborting();
+      }
         break;
       }
+      this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
