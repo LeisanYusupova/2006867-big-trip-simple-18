@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import { UpdateType,  } from '../const.js';
+import {UpdateType} from '../const.js';
 
 export default class OffersModel extends Observable {
 
@@ -25,7 +25,6 @@ export default class OffersModel extends Observable {
       this._notify(UpdateType.INIT);
     }
   };
-
 
 
   getCurrentOffersByType = (point) => {

@@ -12,15 +12,15 @@ const createFilterItemTemplate = (filter, currentFilterType, isDisabled) => {
 };
 const createFilterTemplate = (filterItems, currentFilterType, isDisabled) => {
   const filterItemsTemplate = filterItems
-  .map((filter) => createFilterItemTemplate(filter, currentFilterType, isDisabled))
-  .join('');
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType, isDisabled))
+    .join('');
 
-    return (
+  return (
     `<form class="trip-filters" action="#" method="get">
     ${filterItemsTemplate}
       <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`
-  )
+  );
 };
 
 export default class FilterView extends AbstractView{
@@ -50,5 +50,5 @@ export default class FilterView extends AbstractView{
     if (evt.target.classList.contains('trip-filters__filter-input')){
       this._callback.filterTypeChange(evt.target.value);
     }
-  }
+  };
 }

@@ -8,13 +8,10 @@ import FilterModel from './model/filter-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 
-
 import PointsApiService from './points-api-service.js';
-
 import { render } from './framework/render.js';
 
-
-const AUTHORIZATION = 'Basic qwerty1';
+const AUTHORIZATION = 'Basic qwerty1122';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
 const siteMainElement = document.querySelector('.trip-main');
@@ -42,9 +39,6 @@ const handleNewEventButtonClick = () => {
 };
 
 
-
-
-
 filterPresenter.init();
 eventsPresenter.init();
 
@@ -53,4 +47,4 @@ Promise.all([offersModel.init(), destinationsModel.init()])
   .finally(() => {
     render(newEventButtonComponent, siteMainElement);
     newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, destinationsModel );
-  })
+  });

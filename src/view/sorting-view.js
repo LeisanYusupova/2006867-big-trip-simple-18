@@ -51,5 +51,5 @@ export default class SortingView extends AbstractView{
     if (evt.target.classList.contains('trip-sort__input')) {
       this._callback.sortTypeChange(evt.target.dataset.sortType);
     }
-  }
+  };
 }

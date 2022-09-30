@@ -1,6 +1,6 @@
 import {render, replace, remove} from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { FilterType, UpdateType } from '../const.js';
+import { FilterTypes, UpdateType } from '../const.js';
 
 
 export default class FilterPresenter {
@@ -23,12 +23,12 @@ export default class FilterPresenter {
   get filters() {
     return [
       {
-        type: FilterType.EVERYTHING,
-        name: 'everything'
+        type: FilterTypes.EVERYTHING,
+        name: 'Everything'
       },
       {
-        type: FilterType.FUTURE,
-        name: 'future'
+        type: FilterTypes.FUTURE,
+        name: 'Future'
       }
     ];
   }
@@ -37,7 +37,6 @@ export default class FilterPresenter {
     const filters = this.filters;
     this.#filterIsDisabled = !(this.#wayPointsModel.availabilityFuturePoints);
     const prevFilterComponent = this.#filterComponent;
-
     this.#filterComponent = new FilterView(filters, this.#filterModel.filter, this.#filterIsDisabled);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 

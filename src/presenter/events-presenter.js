@@ -7,7 +7,7 @@ import WayPointNewPresenter from './new-waypoint-presenter.js';
 import { filter } from '../util.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
-import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
+import {FilterTypes, SortType, UpdateType, UserAction} from '../const.js';
 import {render, RenderPosition, remove} from '../framework/render.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
@@ -32,7 +32,7 @@ export default class EventsPresenter {
   #pointPresenter = new Map();
   #wayPointNewPresenter = null;
   #currentSortType = SortType.DAY;
-  #filterType = FilterType.ALL;
+  #filterType = FilterTypes.EVERYTHING;
   #isLoading = true;
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
@@ -78,15 +78,15 @@ export default class EventsPresenter {
       case UserAction.UPDATE_TASK:
         this.#pointPresenter.get(update.id).setSaving();
         try {
-        this.#wayPointsModel.updateWayPoint(updateType, update);
-      } catch(err) {
-        this.#pointPresenter.get(update.id).setAborting();
-      }
+          this.#wayPointsModel.updateWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_TASK:
         this.#wayPointNewPresenter.setSaving();
         try {
-        this.#wayPointsModel.addWayPoint(updateType, update);
+          this.#wayPointsModel.addWayPoint(updateType, update);
         } catch(err) {
           this.#pointPresenter.setAborting();
         }
@@ -94,13 +94,13 @@ export default class EventsPresenter {
       case UserAction.DELETE_TASK:
         this.#pointPresenter.get(update.id).setDeleting();
         try {
-        this.#wayPointsModel.deleteWayPoint(updateType, update);
-      } catch(err) {
-        this.#pointPresenter.get(update.id).setAborting();
-      }
+          this.#wayPointsModel.deleteWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
-      }
-      this.#uiBlocker.unblock();
+    }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -145,7 +145,7 @@ export default class EventsPresenter {
 
   createWayPoint = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
     this.#wayPointNewPresenter.init(callback, this.#destinationsModel, this.#offersModel);
   };
 
@@ -160,7 +160,7 @@ export default class EventsPresenter {
     const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(wayPoint, this.#offersModel, this.#destinationsModel);
     this.#pointPresenter.set(wayPoint.id, pointPresenter);
-  }
+  };
 
   #renderNoPoints = () => {
     this.#noPointsComponent = new NoPointView(this.#filterType);
@@ -185,8 +185,8 @@ export default class EventsPresenter {
 
 
   #renderPoints = (wayPoints) => {
-        wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
-  }
+    wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
+  };
 
   #renderLoading = () => {
     render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
@@ -205,12 +205,11 @@ export default class EventsPresenter {
     }
 
     if (wayPointsCount === 0) {
-      console.log('noPoints');
       this.#renderNoPoints();
-      return
+      return;
     }
 
     this.#renderSort();
     this.#renderPoints(wayPoints);
-  }
+  };
 }

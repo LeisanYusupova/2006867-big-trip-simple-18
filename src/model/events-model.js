@@ -27,13 +27,11 @@ export default class WayPointsModel extends Observable {
     try {
       const wayPoints = await this.#pointsApiService.wayPoints;
       this.#wayPoints = wayPoints.map(this.#adaptToClient);
-      console.log(this.#wayPoints);
     } catch(err) {
       this.#wayPoints = [];
     }
     this._notify(UpdateType.INIT);
   };
-
 
 
   updateWayPoint = async(updateType, update) => {
@@ -47,17 +45,17 @@ export default class WayPointsModel extends Observable {
       const response = await this.#pointsApiService.updatePoint(update);
       const updatedWaypoint = this.#adaptToClient(response);
 
-    this.#wayPoints = [
-      ...this.#wayPoints.slice(0, index),
-      updatedWaypoint,
-      ...this.#wayPoints.slice(index + 1),
-    ];
+      this.#wayPoints = [
+        ...this.#wayPoints.slice(0, index),
+        updatedWaypoint,
+        ...this.#wayPoints.slice(index + 1),
+      ];
 
-    this._notify(updateType, updatedWaypoint);
-  } catch(err) {
-    throw new Error('Can\'t update task');
-  }
-};
+      this._notify(updateType, updatedWaypoint);
+    } catch(err) {
+      throw new Error('Can\'t update task');
+    }
+  };
 
 
   addWayPoint = async (updateType, update) => {
@@ -89,7 +87,7 @@ export default class WayPointsModel extends Observable {
         ...this.#wayPoints.slice(index + 1),
       ];
       this._notify(updateType);
-    }  catch(err) {
+    } catch(err) {
       throw new Error('Can\'t delete task');
     }
   };
@@ -98,8 +96,8 @@ export default class WayPointsModel extends Observable {
 
   #adaptToClient = (point) => {
     const adaptedPoint = {...point,
-      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
-      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      dateFrom: point['date_from'] ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] ? new Date(point['date_to']) : point['date_to'],
       basePrice: point['base_price']
     };
     if (this.#checkPointIsFuture(adaptedPoint)) {
