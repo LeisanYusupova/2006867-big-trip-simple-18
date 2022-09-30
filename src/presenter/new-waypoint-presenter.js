@@ -16,7 +16,7 @@ export default class WayPointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback, offersModel, destinationsModel) => {
+  init = (callback, destinationsModel, offersModel) => {
 
     this.#destroyCallback = callback;
 
@@ -28,10 +28,9 @@ export default class WayPointNewPresenter {
     const destinations = destinationsModel.destinations;
 
     this.#pointEditComponent = new EditEventFormView(destinations, allOffers);
-
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    // this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent.setCloseFormHandler(this.#handleDeleteClick);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -57,26 +56,35 @@ export default class WayPointNewPresenter {
     }
   };
 
+  setSaving = () => {
+    this.#pointEditComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  };
 
-  // #handleTypeChange = (newType) => {
-  //   this.#wayPoint = {...this.#wayPoint, type: newType};
-  //   this.init(this.#wayPoint);
-  // }
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
 
-  #handleFormSubmit = (update) => {
+    this.#pointEditComponent.shake(resetFormState);
+  };
 
+
+  #handleFormSubmit = (wayPoint) => {
     this.#changeData(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
-      {id: 6, ...update},
+      wayPoint,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {
     this.destroy();
-  }
-
-  }
-
-
+  };
+}

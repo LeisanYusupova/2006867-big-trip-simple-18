@@ -8,15 +8,10 @@ import FilterModel from './model/filter-model.js';
 import OffersModel from './model/offers-model.js';
 import DestinationsModel from './model/destinations-model.js';
 
-
 import PointsApiService from './points-api-service.js';
-import OffersApiService from './offers-api-service.js';
-import DestinationsApiService from './destinations-api-service.js';
-
 import { render } from './framework/render.js';
 
-
-const AUTHORIZATION = 'Basic qwerty';
+const AUTHORIZATION = 'Basic qwerty1122';
 const END_POINT = 'https://18.ecmascript.pages.academy/big-trip';
 
 const siteMainElement = document.querySelector('.trip-main');
@@ -24,11 +19,13 @@ const siteFilterElement = siteMainElement.querySelector('.trip-controls__filters
 const siteContentElement = document.querySelector('.trip-events');
 
 const filterModel = new FilterModel();
-const wayPointsModel = new WayPointsModel(new PointsApiService(END_POINT, AUTHORIZATION));
-const offersModel = new OffersModel(new OffersApiService(END_POINT, AUTHORIZATION));
-const destinationsModel = new DestinationsModel(new DestinationsApiService(END_POINT, AUTHORIZATION));
 
-const filterPresenter = new FilterPresenter(siteFilterElement, wayPointsModel, filterModel);
+const pointsApiService = new PointsApiService(END_POINT, AUTHORIZATION);
+const wayPointsModel = new WayPointsModel(pointsApiService);
+const offersModel = new OffersModel(pointsApiService);
+const destinationsModel = new DestinationsModel(pointsApiService);
+
+const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, wayPointsModel);
 const newEventButtonComponent = new NewEventButtonView();
 const eventsPresenter = new EventsPresenter(siteContentElement, wayPointsModel, offersModel, destinationsModel, filterModel);
 
@@ -41,13 +38,13 @@ const handleNewEventButtonClick = () => {
   newEventButtonComponent.element.disabled = true;
 };
 
-render(newEventButtonComponent, siteMainElement);
-newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, destinationsModel );
 
-
-// filterPresenter.init();
+filterPresenter.init();
 eventsPresenter.init();
-wayPointsModel.init();
-offersModel.init();
-destinationsModel.init();
 
+Promise.all([offersModel.init(), destinationsModel.init()])
+  .then(() => wayPointsModel.init())
+  .finally(() => {
+    render(newEventButtonComponent, siteMainElement);
+    newEventButtonComponent.setClickHandler(handleNewEventButtonClick, offersModel, destinationsModel );
+  });

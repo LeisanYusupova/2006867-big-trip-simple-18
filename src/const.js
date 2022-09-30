@@ -16,9 +16,9 @@ const UpdateType = {
   INIT: 'INIT'
 };
 
-const FilterType = {
-  ALL: 'everything',
-  FUTURE: 'future',
+const FilterTypes = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future'
 };
 
 const ActionType = {
@@ -27,5 +27,4 @@ const ActionType = {
 };
 
 
-
-export {SortType, UserAction, UpdateType, FilterType, ActionType};
+export {SortType, UserAction, UpdateType, FilterTypes, ActionType};

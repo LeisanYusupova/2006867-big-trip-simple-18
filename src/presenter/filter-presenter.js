@@ -1,12 +1,14 @@
 import {render, replace, remove} from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
-import { FilterType, UpdateType } from '../const.js';
+import { FilterTypes, UpdateType } from '../const.js';
 
 
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;
   #wayPointsModel = null;
+  #filterIsDisabled;
+
   #filterComponent = null;
 
   constructor(filterContainer, filterModel, wayPointsModel) {
@@ -21,21 +23,21 @@ export default class FilterPresenter {
   get filters() {
     return [
       {
-        type: FilterType.EVERYTHING,
-        name: 'everything'
+        type: FilterTypes.EVERYTHING,
+        name: 'Everything'
       },
       {
-        type: FilterType.FUTURE,
-        name: 'future'
+        type: FilterTypes.FUTURE,
+        name: 'Future'
       }
     ];
   }
 
   init = () => {
     const filters = this.filters;
+    this.#filterIsDisabled = !(this.#wayPointsModel.availabilityFuturePoints);
     const prevFilterComponent = this.#filterComponent;
-
-    this.#filterComponent = new FilterView(filters, this.#filterModel.filter);
+    this.#filterComponent = new FilterView(filters, this.#filterModel.filter, this.#filterIsDisabled);
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 
     if (prevFilterComponent === null) {

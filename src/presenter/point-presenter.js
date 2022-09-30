@@ -1,6 +1,6 @@
 import {render, replace, remove} from '../framework/render.js';
 import EditEventFormView from '../view/edit-event-form-view.js';
-import WayPointView from '../view/way-point-view.js'
+import WayPointView from '../view/way-point-view.js';
 import {UserAction, UpdateType} from '../const.js';
 import { isDatesEqual } from '../util.js';
 
@@ -9,7 +9,6 @@ const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING',
 };
-
 
 
 export default class PointPresenter {
@@ -40,7 +39,7 @@ export default class PointPresenter {
 
   init = (wayPoint, offersModel, destinationsModel) => {
     this.#wayPoint = wayPoint;
-    console.log(wayPoint);
+
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
@@ -49,18 +48,16 @@ export default class PointPresenter {
     this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
 
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
-    console.log(this.#currentDestination);
     this.#destinations = destinationsModel.destinations;
 
-
-    this.#pointComponent = new WayPointView(wayPoint, this.#currentDestination, this.#selectedOffers);
-    this.#pointEditComponent = new EditEventFormView(wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
+    this.#pointComponent = new WayPointView(this.#wayPoint, this.#currentDestination, this.#selectedOffers);
+    this.#pointEditComponent = new EditEventFormView(this.#destinations, this.#allOffers, this.#wayPoint, this.#currentOffersByType);
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
-    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick)
+    this.#pointEditComponent.setCloseFormHandler(this.#handleCloseForm);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -73,7 +70,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent);
+      replace(this.#pointComponent, prevPointEditComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -91,19 +89,54 @@ export default class PointPresenter {
     }
   };
 
+  setSaving = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#mode === Mode.EDITING) {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  };
+
+  setAborting = () => {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  };
+
 
   #replacePointToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
     this.#changeMode();
     this.#mode = Mode.EDITING;
-  }
+  };
 
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#mode = Mode.DEFAULT;
-  }
+  };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
@@ -116,10 +149,6 @@ export default class PointPresenter {
     this.#replacePointToForm();
   };
 
-  #handleTypeChange = (newType) => {
-    this.#wayPoint = {...this.#wayPoint, type: newType};
-    this.init(this.#wayPoint);
-  }
 
   #handleFormSubmit = (update) => {
 
@@ -133,6 +162,10 @@ export default class PointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update,
     );
+  };
+
+  #handleCloseForm = () => {
+    this.#pointEditComponent.reset(this.#wayPoint);
     this.#replaceFormToPoint();
   };
 
@@ -142,7 +175,7 @@ export default class PointPresenter {
       UpdateType.MINOR,
       wayPoint,
     );
-  }
-  }
+  };
+}
 
 

@@ -2,14 +2,19 @@ import EventsListView from '../view/trip-events-list-view.js';
 import PointPresenter from './point-presenter.js';
 import NoPointView from '../view/no-point-view.js';
 import SortingView from '../view/sorting-view.js';
+import LoadingView from '../view/loading-view.js';
 import WayPointNewPresenter from './new-waypoint-presenter.js';
 import { filter } from '../util.js';
 import { sortByDate } from '../util.js';
 import { sortByPrice } from '../util.js';
-import {FilterType, SortType, UpdateType, UserAction} from '../const.js';
+import {FilterTypes, SortType, UpdateType, UserAction} from '../const.js';
 import {render, RenderPosition, remove} from '../framework/render.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
-
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class EventsPresenter {
   #eventsContainer = null;
@@ -19,13 +24,17 @@ export default class EventsPresenter {
   #destinationsModel = null;
 
   #eventsListComponent = new EventsListView();
+  #loadingComponent = new LoadingView();
+
+
   #sortComponent = null;
   #noPointsComponent = null;
   #pointPresenter = new Map();
   #wayPointNewPresenter = null;
   #currentSortType = SortType.DAY;
-  #filterType = FilterType.ALL;
-
+  #filterType = FilterTypes.EVERYTHING;
+  #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
 
   constructor(eventsContainer, wayPointsModel, offersModel, destinationsModel, filterModel ) {
@@ -55,7 +64,7 @@ export default class EventsPresenter {
       case SortType.PRICE:
         return filteredWayPoints.sort(sortByPrice);
     }
-    return filteredWayPoints;
+    return this.#wayPointsModel.wayPoints;
   }
 
 
@@ -63,24 +72,41 @@ export default class EventsPresenter {
     this.#renderBoard();
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this.#wayPointsModel.updateWayPoint(updateType, update);
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          this.#wayPointsModel.updateWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_TASK:
-        this.#wayPointsModel.addWayPoint(updateType, update);
+        this.#wayPointNewPresenter.setSaving();
+        try {
+          this.#wayPointsModel.addWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_TASK:
-        this.#wayPointsModel.deleteWayPoint(updateType, update);
+        this.#pointPresenter.get(update.id).setDeleting();
+        try {
+          this.#wayPointsModel.deleteWayPoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
-      }
+    }
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenter.get(data.id).init(data);
+        this.#pointPresenter.get(data.id).init(data, this.#offersModel, this.#destinationsModel);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
@@ -91,6 +117,8 @@ export default class EventsPresenter {
         this.#renderBoard({resetSortType: true});
         break;
       case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#clearBoard();
         this.#renderBoard();
         break;
@@ -117,8 +145,8 @@ export default class EventsPresenter {
 
   createWayPoint = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
-    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-    this.#wayPointNewPresenter.init(callback);
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterTypes.EVERYTHING);
+    this.#wayPointNewPresenter.init(callback, this.#destinationsModel, this.#offersModel);
   };
 
   #handleModeChange = () => {
@@ -132,7 +160,7 @@ export default class EventsPresenter {
     const pointPresenter = new PointPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(wayPoint, this.#offersModel, this.#destinationsModel);
     this.#pointPresenter.set(wayPoint.id, pointPresenter);
-  }
+  };
 
   #renderNoPoints = () => {
     this.#noPointsComponent = new NoPointView(this.#filterType);
@@ -147,6 +175,7 @@ export default class EventsPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#noPointsComponent);
 
     if (resetSortType) {
@@ -156,8 +185,13 @@ export default class EventsPresenter {
 
 
   #renderPoints = (wayPoints) => {
-        wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
-  }
+    wayPoints.forEach((tripPoint) => this.#renderPoint(tripPoint));
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
 
   #renderBoard = () => {
     const wayPoints = this.wayPoints;
@@ -165,13 +199,17 @@ export default class EventsPresenter {
 
     render(this.#eventsListComponent, this.#eventsContainer);
 
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     if (wayPointsCount === 0) {
-      console.log('noPoints');
       this.#renderNoPoints();
-      return
+      return;
     }
 
     this.#renderSort();
     this.#renderPoints(wayPoints);
-  }
+  };
 }
