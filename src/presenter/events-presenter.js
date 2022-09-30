@@ -128,7 +128,7 @@ export default class EventsPresenter {
   createWayPoint = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-    this.#wayPointNewPresenter.init(callback, this.#offersModel, this.#destinationsModel );
+    this.#wayPointNewPresenter.init(callback, this.#destinationsModel, this.#offersModel);
   };
 
   #handleModeChange = () => {

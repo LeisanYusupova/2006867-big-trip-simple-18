@@ -16,7 +16,7 @@ export default class WayPointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback, offersModel, destinationsModel) => {
+  init = (callback, destinationsModel, offersModel) => {
 
     this.#destroyCallback = callback;
 
@@ -26,6 +26,7 @@ export default class WayPointNewPresenter {
 
     const allOffers = offersModel.offersByType;
     const destinations = destinationsModel.destinations;
+    console.log(destinations);
 
     this.#pointEditComponent = new EditEventFormView(destinations, allOffers);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
@@ -66,13 +67,11 @@ export default class WayPointNewPresenter {
 
 
   #handleFormSubmit = (wayPoint) => {
-
     this.#changeData(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
       wayPoint,
     );
-    this.destroy();
   };
 
   #handleDeleteClick = () => {

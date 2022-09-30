@@ -15,8 +15,11 @@ const BLANK_POINT = {
 };
 
 const editEventViewTemplate = (wayPoint) => {
-  const {basePrice, dateFrom, dateTo, destination, type, offers, offersByType, destinations, isDisabled, isSaving, isDeleting} = wayPoint;
+  const {basePrice, dateFrom, dateTo, destination, type, offers, destinations, offersByType, isDisabled, isSaving, isDeleting} = wayPoint;
+  console.log(destinations);
+  console.log(offers);
   const tripDestination = destinations.find((pointDestination) => (pointDestination.id === destination));
+  console.log(tripDestination);
   const fullDateFrom = humanizeFullDate(dateFrom);
   const fullDateTo = humanizeFullDate(dateTo);
 
@@ -59,9 +62,9 @@ const editEventViewTemplate = (wayPoint) => {
     const destinationsOptions = allDestinations.map((destination) => `<option value="${destination.name}"></option>`).join('');
     return (
       `<label class="event__label  event__type-output" for="event-destination-1">
-         ${type}
+      ${type ? type : ''}
        </label>
-       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripDestination.name}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
+       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${tripDestination ? tripDestination.name : ' '}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
        <datalist id="destination-list-1">
          ${destinationsOptions}
        </datalist>`);
@@ -89,12 +92,12 @@ const editEventViewTemplate = (wayPoint) => {
   `);
 
 
-  const createOffersTemplate = (currentOffers, offersByType) => {
+  const createOffersTemplate = (currentOffers, offersByType, isDisabled) => {
 
     const availableOffers = offersByType.offers.map((offer) => `
       <div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.toLowerCase()}-1" data-offer-id="${offer.id}" type="checkbox"
-        name="event-offer-${offer.title.toLowerCase()}" ${currentOffers.includes(offer.id) ? 'checked' : ''}>
+        name="event-offer-${offer.title.toLowerCase()}" ${currentOffers.includes(offer.id) ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
         <label class="event__offer-label" for="event-offer-${offer.title.toLowerCase()}-1">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -164,7 +167,7 @@ export default class EditEventFormView extends AbstractStatefulView{
   #datepickerTo = null;
 
 
-  constructor(wayPoint = BLANK_POINT, destinations, allOffers,  offersByType=null) {
+  constructor(destinations, allOffers, wayPoint = BLANK_POINT, offersByType=null) {
     super();
     this._state = EditEventFormView.parsePointToState(wayPoint, destinations, allOffers, offersByType);
     this.#setInnerHandlers();
@@ -213,28 +216,6 @@ export default class EditEventFormView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    if (!this._state.type) {
-      return;
-    }
-    if (!this._state.destination) {
-      return;
-    }
-
-    if (!this._state.dateFrom) {
-      return;
-    }
-
-    if (!this._state.dateTo) {
-      return;
-    }
-
-    if (this._state.dateFrom > this._state.dateTo) {
-      return;
-    }
-
-    if (!this._state.basePrice) {
-      return;
-    }
     this._callback.formSubmit(EditEventFormView.parseStateToPoint(this._state));
   };
 

@@ -45,14 +45,17 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#allOffers = offersModel.offersByType;
+    console.log(this.#allOffers);
     this.#selectedOffers = offersModel.getSelectedOffers(this.#wayPoint);
+    console.log(this.#selectedOffers);
     this.#currentOffersByType = offersModel.getCurrentOffersByType(this.#wayPoint);
 
     this.#currentDestination = destinationsModel.getCurrentDestination(this.#wayPoint);
     this.#destinations = destinationsModel.destinations;
+    console.log(this.#destinations);
 
     this.#pointComponent = new WayPointView(this.#wayPoint, this.#currentDestination, this.#selectedOffers);
-    this.#pointEditComponent = new EditEventFormView(this.#wayPoint, this.#destinations, this.#allOffers,  this.#currentOffersByType );
+    this.#pointEditComponent = new EditEventFormView(this.#destinations, this.#allOffers, this.#wayPoint, this.#currentOffersByType);
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
