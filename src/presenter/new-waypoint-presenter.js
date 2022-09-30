@@ -9,17 +9,14 @@ export default class WayPointNewPresenter {
   #changeData = null;
   #destroyCallback = null;
   #pointEditComponent = null;
-  #wayPointsModel = null;
-
 
 
   constructor(pointListContainer, changeData) {
     this.#pointListContainer = pointListContainer;
     this.#changeData = changeData;
-
   }
 
-  init = (callback, wayPointsModel) => {
+  init = (callback, offersModel, destinationsModel) => {
 
     this.#destroyCallback = callback;
 
@@ -27,13 +24,13 @@ export default class WayPointNewPresenter {
       return;
     }
 
-    const allOffers = wayPointsModel.offersByType;
-    const destinations = wayPointsModel.destinations;
+    const allOffers = offersModel.offersByType;
+    const destinations = destinationsModel.destinations;
 
     this.#pointEditComponent = new EditEventFormView(destinations, allOffers);
-
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent.setCloseFormHandler(this.#handleDeleteClick);
 
     render(this.#pointEditComponent, this.#pointListContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
@@ -81,7 +78,6 @@ export default class WayPointNewPresenter {
   #handleDeleteClick = () => {
     this.destroy();
   }
-
-  }
+}
 
 

@@ -21,22 +21,38 @@ const editEventViewTemplate = (wayPoint) => {
   const fullDateTo = humanizeFullDate(dateTo);
 
 
-  const createTripTransportTypeList = (wayPoint, isDisabled) => {
-    const eventTypeListTemplate = offersTypes.map((type) =>
+  const createTripTransportTypeList = (type, isDisabled) => {
+    const eventTypeListTemplate = offersTypes.map((tripType) =>
       `
       <div class='event__type-item'>
-        <input id='event-type-${type}-1' class='event__type-input  visually-hidden' type='radio' name='event-type' value='${type}'
-        ${wayPoint.type === type ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
-        <label class='event__type-label  event__type-label--${type.toLowerCase()}' for='event-type-${type}-1'>
-          ${type}
+        <input id='event-type-${tripType}-1' class='event__type-input  visually-hidden' type='radio' name='event-type' value='${tripType}'
+        ${tripType === type ? 'checked' : ''} ${isDisabled ? 'disabled' : ''}>
+        <label class='event__type-label  event__type-label--${tripType.toLowerCase()}' for='event-type-${tripType}-1'>
+          ${tripType}
         </label>
       </div>
-    `
-    );
+    `).join('');
 
-    return eventTypeListTemplate.join('');
-  };
+    let typeImage;
+    if (type) {
+      typeImage = `<img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">`;
+    }
 
+    return (
+     ` <label class="event__type  event__type-btn" for="event-type-toggle-1">
+      <span class="visually-hidden">choose event type</span>
+      ${type ? typeImage : ''}
+    </label>
+    <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+    <div class="event__type-list">
+      <fieldset class="event__type-group">
+        <legend class="visually-hidden">Event type</legend>
+        ${eventTypeListTemplate}
+        </fieldset>
+     </div>
+        `
+    )
+  }
 
   const createDestinationTemplate = (tripDestination, allDestinations, type, isDisabled) => {
 
@@ -103,19 +119,10 @@ const editEventViewTemplate = (wayPoint) => {
         <form class="event event--edit" action="#" method="post">
           <header class="event__header">
             <div class="event__type-wrapper">
-              <label class="event__type  event__type-btn" for="event-type-toggle-1">
-                <span class="visually-hidden">choose event type</span>
-                <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
-              </label>
-              <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-              <div class="event__type-list">
-                <fieldset class="event__type-group">
-                  <legend class="visually-hidden">Event type</legend>
 
-               ${createTripTransportTypeList(wayPoint, isDisabled)}
-              </fieldset>
-            </div>
-          </div>
+               ${createTripTransportTypeList(wayPoint.type, isDisabled)}
+
+             </div>
 
           <div class="event__field-group  event__field-group--destination">
             ${createDestinationTemplate(tripDestination, destinations, type, isDisabled)}
@@ -157,15 +164,13 @@ export default class EditEventFormView extends AbstractStatefulView{
   #datepickerTo = null;
 
 
-  constructor(wayPoint = BLANK_POINT, destinations, allOffers, offersByType=null) {
+  constructor(wayPoint = BLANK_POINT, destinations, allOffers,  offersByType=null) {
     super();
     this._state = EditEventFormView.parsePointToState(wayPoint, destinations, allOffers, offersByType);
     this.#setInnerHandlers();
   }
 
-  get template() {
-    return editEventViewTemplate(this._state);
-  }
+
 
   removeElement = () => {
     super.removeElement();
@@ -179,6 +184,10 @@ export default class EditEventFormView extends AbstractStatefulView{
       this.#datepickerFrom = null;
     }
   };
+
+  get template() {
+    return editEventViewTemplate(this._state);
+  }
 
   reset = (waypoint) => {
     this.updateElement(
@@ -219,6 +228,10 @@ export default class EditEventFormView extends AbstractStatefulView{
       return;
     }
 
+    if (this._state.dateFrom > this._state.dateTo) {
+      return;
+    }
+
     if (!this._state.basePrice) {
       return;
     }
@@ -245,7 +258,7 @@ export default class EditEventFormView extends AbstractStatefulView{
 
 
   #destinationToggleHandler = (evt) => {
-    const currentDestination = destinations.find((destination) => destination.name === evt.target.value);
+    const currentDestination = this._state.destinations.find((destination) => destination.name === evt.target.value);
     console.log(currentDestination);
     this.updateElement({
       destination: currentDestination.id
@@ -296,7 +309,9 @@ export default class EditEventFormView extends AbstractStatefulView{
     this.#setDatepickerFrom();
     this.#setDatepickerTo();
     this.element.querySelector('#event-price-1').addEventListener('input', this.#priceToggleHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
+    if ( this.element.querySelector('.event__available-offers')) {
+      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersToggleHandler);
+    };
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typeToggleHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationToggleHandler);
   }

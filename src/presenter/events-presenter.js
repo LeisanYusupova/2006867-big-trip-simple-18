@@ -40,7 +40,7 @@ export default class EventsPresenter {
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction, this.#wayPointsModel);
+    this.#wayPointNewPresenter = new WayPointNewPresenter(this.#eventsListComponent.element, this.#handleViewAction);
 
 
     this.#wayPointsModel.addObserver(this.#handleModelEvent);
@@ -88,7 +88,7 @@ export default class EventsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#pointPresenter.get(data.id).init(data);
+        this.#pointPresenter.get(data.id).init(data, this.#offersModel, this.#destinationsModel);
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
@@ -128,7 +128,7 @@ export default class EventsPresenter {
   createWayPoint = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.ALL);
-    this.#wayPointNewPresenter.init(callback);
+    this.#wayPointNewPresenter.init(callback, this.#offersModel, this.#destinationsModel );
   };
 
   #handleModeChange = () => {

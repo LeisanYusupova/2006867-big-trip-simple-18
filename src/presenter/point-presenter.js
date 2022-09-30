@@ -52,7 +52,7 @@ export default class PointPresenter {
     this.#destinations = destinationsModel.destinations;
 
     this.#pointComponent = new WayPointView(this.#wayPoint, this.#currentDestination, this.#selectedOffers);
-    this.#pointEditComponent = new EditEventFormView(this.#wayPoint, this.#destinations, this.#allOffers, this.#currentOffersByType );
+    this.#pointEditComponent = new EditEventFormView(this.#wayPoint, this.#destinations, this.#allOffers,  this.#currentOffersByType );
 
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
