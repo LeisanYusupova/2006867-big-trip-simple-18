@@ -1,6 +1,7 @@
 import {render, RenderPosition, remove} from '../framework/render.js';
 import EditEventFormView from '../view/edit-event-form-view.js';
 import {UserAction, UpdateType} from '../const.js';
+import { isEscapeDown } from '../util.js';
 
 
 export default class WayPointNewPresenter {
@@ -50,7 +51,7 @@ export default class WayPointNewPresenter {
 
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscapeDown(evt)) {
       evt.preventDefault();
       this.destroy();
     }

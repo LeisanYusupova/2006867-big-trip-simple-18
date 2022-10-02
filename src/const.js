@@ -1,3 +1,5 @@
+const tripTypes = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 const SortType = {
   DAY: 'day',
   PRICE: 'price',
@@ -26,5 +28,4 @@ const ActionType = {
   CREATE: 'create',
 };
 
-
-export {SortType, UserAction, UpdateType, FilterTypes, ActionType};
+export {SortType, UserAction, UpdateType, FilterTypes, ActionType, tripTypes};

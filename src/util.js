@@ -12,6 +12,9 @@ const humanizePointTime = (date) => dayjs(date).format('HH:mm');
 
 const humanizeFullDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
+const isEscapeDown = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -44,4 +47,4 @@ const filter = {
 };
 
 
-export {isDatesEqual, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter, isPointFuture};
+export {isDatesEqual, humanizeTaskDueDate, humanizePointTime, humanizeFullDate, sortByDate, sortByPrice, filter, isPointFuture, isEscapeDown};

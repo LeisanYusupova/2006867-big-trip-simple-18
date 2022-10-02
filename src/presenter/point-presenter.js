@@ -3,6 +3,7 @@ import EditEventFormView from '../view/edit-event-form-view.js';
 import WayPointView from '../view/way-point-view.js';
 import {UserAction, UpdateType} from '../const.js';
 import { isDatesEqual } from '../util.js';
+import { isEscapeDown } from '../util.js';
 
 
 const Mode = {
@@ -139,7 +140,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape' || evt.key === 'Esc') {
+    if (isEscapeDown(evt)) {
       evt.preventDefault();
       this.#replaceFormToPoint();
     }
