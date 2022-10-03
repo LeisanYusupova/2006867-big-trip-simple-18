@@ -3,7 +3,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeFullDate } from '../util.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import {offersTypes} from '../mock/const.js';
+import { tripTypes } from '../const.js';
 import he from 'he';
 
 const BLANK_POINT = {
@@ -20,7 +20,7 @@ const editEventViewTemplate = (wayPoint) => {
   const tripDestination = destinations.find((pointDestination) => (pointDestination.id === destination));
 
   const createTripTransportTypeList = (TransportType) => {
-    const eventTypeListTemplate = offersTypes.map((tripType) =>
+    const eventTypeListTemplate = tripTypes.map((tripType) =>
       `
       <div class='event__type-item'>
         <input id='event-type-${tripType}-1' class='event__type-input  visually-hidden' type='radio' name='event-type' value='${tripType}'
